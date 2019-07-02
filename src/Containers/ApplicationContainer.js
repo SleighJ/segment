@@ -11,7 +11,7 @@ class ApplicationContainer extends Component {
 	}
 
 	render() {
-		const { estimatedSegmentSize } = this.state
+		const { estimatedSegmentSize } = this.state;
 
 		return(
 			<div style={{backgroundColor: 'lightgrey'}}>
