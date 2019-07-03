@@ -6,7 +6,7 @@ import ApplicationContainer from './Containers/ApplicationContainer';
 
 function App() {
   return (
-      <div>
+      <div style={{backgroundColor: 'rgb(242, 243, 243)'}}>
         <ApplicationContainer />
       </div>
   );
