@@ -30,7 +30,7 @@ class ApplicationContainer extends Component {
 
 							<Grid.Column width={10}>
 								<Segment style={{borderRadius: '1', height: '100%', boxShadow: 'none', fontFamily: 'IBM Plex Sans', color: 'rgb(88, 88, 88)', border: '1.5px solid lightGrey'}}>
-									<Header as={'h4'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.2rem', color: 'rgb(88, 88, 88)', margin : '1.5%'}}>Estimated segment size</Header>
+									<Header as={'h4'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', marginTop: '1.5%', marginBottom: '1.5%', marginRight: '1.5%'}}>Estimated segment size</Header>
 									<p>% of your total traffic expected to join based on a sample of historical data</p>
 									<Progress color={'green'} size={'medium'} percent={ estimatedSegmentSize } progress/>
 								</Segment>
@@ -45,7 +45,7 @@ class ApplicationContainer extends Component {
 
 							<Grid.Row style={{display: 'flex'}}>
 								<Grid.Column width={12} style={{width: '100%'}}>
-									<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', color: 'rgb(88, 88, 88)'}}>Products purchased <span style={{color: 'lightGrey'}}> - What products have they interacted with? </span> </Header>
+									<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%'}}>Products purchased <span style={{color: 'lightGrey'}}> - What products have they interacted with? </span> </Header>
 								</Grid.Column>
 
 								<Grid.Column width={4} style={{width: '100%'}}>
@@ -92,7 +92,7 @@ class ApplicationContainer extends Component {
 
 								<Grid.Row style={{display: 'flex'}}>
 									<Grid.Column style={{width: '120%'}}>
-										<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', color: 'rgb(88, 88, 88)'}}>Time of purchase <span style={{color: 'lightGrey'}}> - When did this purchase take place? </span> </Header>
+										<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%',}}>Time of purchase <span style={{color: 'lightGrey'}}> - When did this purchase take place? </span> </Header>
 									</Grid.Column>
 
 									<Grid.Column style={{width: '80%'}}>
@@ -143,7 +143,7 @@ class ApplicationContainer extends Component {
 
 							<Grid.Row style={{display: 'flex'}}>
 								<Grid.Column style={{width: '120%'}}>
-									<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', color: 'rgb(88, 88, 88)'}}> Technology <span style={{color: 'lightGrey'}}> - Which device, browser or operating system are they using? </span> </Header>
+									<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%',}}> Technology <span style={{color: 'lightGrey'}}> - Which device, browser or operating system are they using? </span> </Header>
 								</Grid.Column>
 
 								<Grid.Column style={{width: '80%'}}>
@@ -191,13 +191,13 @@ class ApplicationContainer extends Component {
 					<Grid columns={'equal'} container={true} centered>
 						<Segment style={{width: '97%', marginTop: '1%', borderRadius: '1', marginBottom: '3%', boxShadow: 'none', fontFamily: 'IBM Plex Sans', color: 'rgb(68, 68, 68)', border: '1.5px solid lightGrey'}}>
 
-							<Grid.Row style={{display: 'flex', alignItems: 'center', color: 'rgb(68, 68, 68)'}}>
+							<Grid.Row style={{display: 'flex', alignItems: 'center', color: 'rgb(68, 68, 68)', margin: '2%'}}>
 
 								<Grid.Column width={4}>
-									<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', color: 'rgb(88, 88, 88)'}}>New Condition</Header>
+									<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)'}}>New Condition</Header>
 								</Grid.Column>
 
-								<Grid.Column width={3} style={{paddingLeft: '12%', width: '40%'}}>
+								<Grid.Column width={3} style={{paddingLeft: '8.5%', width: '40%'}}>
 									<Dropdown
 										className={'dropdown'}
 										placeholder='Purchase history'
