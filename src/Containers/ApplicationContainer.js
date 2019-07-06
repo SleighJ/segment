@@ -160,7 +160,8 @@ class ApplicationContainer extends Component {
 		super(props);
 
 		this.state = {
-			estimatedSegmentSize: 15,
+			estimatedSegmentSize: 100,
+			productConditions: ['*'],
 			selectedGender: null,
 			selectedAssociation: null,
 			genderGarments: null,
@@ -169,11 +170,13 @@ class ApplicationContainer extends Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender } = this.state;
+		const { selectedGender, selectedGarments, estimatedSegmentSize } = this.state;
 
+		//if no garments of that gender have been selected
 		if (!this.state.genderGarments) {
-
+			//but a gender has been selected
 			if (selectedGender) {
+				//lets define that genders garments
 				let genderGarments = clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1);
 				this.setState({
 					genderGarments,
@@ -181,12 +184,30 @@ class ApplicationContainer extends Component {
 			}
 		}
 
+		//if selectedGender has changed, reset the gendersGarments
 		if (selectedGender != prevState.selectedGender) {
+
+			let gender = selectedGender.value;
+
+			switch (gender) {
+				case 'Men':
+					this.setState(prevState => ({
+						estimatedSegmentSize: prevState.estimatedSegmentSize * .285,
+					}));
+					break;
+			}
+
 			this.setState({
 				genderGarments: null,
 			})
 		}
 
+		if (selectedGarments != prevState.selectedGarments) {
+			let newEstimatedSegmentSize = estimatedSegmentSize * .9;
+			this.setState({
+				estimatedSegmentSize: newEstimatedSegmentSize,
+			});
+		}
 	};
 
 	selectGender = (e, { value }) => {
@@ -231,10 +252,17 @@ class ApplicationContainer extends Component {
 		}));
 	};
 
-	render() {
-		const { estimatedSegmentSize, selectedGender, selectedAssociation, genderGarments } = this.state;
+	addProductCondition = () => {
+		this.setState(prevState => ({
+			productConditions: [...prevState.productConditions, '*'],
+		}))
+	};
 
-		console.log(this.state)
+	render() {
+		const { estimatedSegmentSize, genderGarments, productConditions } = this.state;
+
+		console.log(estimatedSegmentSize)
+
 		return(
 			<div>
 
@@ -266,7 +294,7 @@ class ApplicationContainer extends Component {
 											<Segment style={{borderRadius: '1', height: '100%', boxShadow: 'none', fontFamily: 'IBM Plex Sans', color: 'rgb(88, 88, 88)', border: '1.5px solid lightGrey'}}>
 												<Header as={'h4'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', marginTop: '1.5%', marginBottom: '1.5%', marginRight: '1.5%'}}>Estimated segment size</Header>
 												<p>% of your total traffic expected to join based on a sample of historical data</p>
-												<Progress color={'green'} size={'medium'} percent={ estimatedSegmentSize } progress/>
+												<Progress color={'green'} size={'medium'} percent={ Number.parseFloat(estimatedSegmentSize).toFixed(2) } progress/>
 											</Segment>
 										</Grid.Column>
 
@@ -290,60 +318,69 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 										</Grid.Row>
 
-										<Grid.Row style={{display: 'flex'}}>
-											<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
-												<Dropdown
-													className={'dropdown'}
-													placeholder='Select Category'
-													fluid
-													selection
-													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-													options={ genderArray.map(category => ({
-														id: category.key,
-														value: category.value,
-														text: category.text
-													})) }
-													onChange={ this.selectGender }
-												/>
-												<Button floated={'left'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}> +More </Button>
+										{ productConditions.map((row, i) => {
 
-											</Grid.Column>
-											<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
-												<Dropdown
-													className={'dropdown'}
-													placeholder='Association'
-													fluid
-													selection
-													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-													disabled={ this.state.selectedGender ? false : true }
-													options={ associationArray.map(association => ({
-														key: association.key,
-														value: association.value,
-														text: association.text
-													})) }
-													onChange={ this.selectAssociation }
-												/>
-											</Grid.Column>
-											<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
-												<Dropdown
-													placeholder={'Select Item'}
-													style={{ fontSize: '12px', width: '65%'}}
-													disabled={ this.state.genderGarments ? false : true }
-													multiple
-													search
-													selection
-													options={ genderGarments ? genderGarments.map(garment => ({
-														key: garment.key,
-														value: garment.value,
-														text: garment.text,
-													})) : null }
-													onChange={ this.selectGarments }
-													// onChange={ (this.selectGarments }
-												/>
-											</Grid.Column>
-										</Grid.Row>
+											return (
+												<Grid.Row style={{display: 'flex'}}>
+													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
+														<Dropdown
+															className={'dropdown'}
+															placeholder='Select Category'
+															fluid
+															selection
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+															options={ genderArray.map(category => ({
+																id: category.key,
+																value: category.value,
+																text: category.text
+															})) }
+															onChange={ this.selectGender }
+														/>
+														<Button
+															floated={'left'}
+															size={'tiny'}
+															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
+															onClick={ ()=>this.addProductCondition() }
+														> +More </Button>
 
+													</Grid.Column>
+													<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
+														<Dropdown
+															className={'dropdown'}
+															placeholder='Association'
+															fluid
+															selection
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+															disabled={ this.state.selectedGender ? false : true }
+															options={ associationArray.map(association => ({
+																key: association.key,
+																value: association.value,
+																text: association.text
+															})) }
+															onChange={ this.selectAssociation }
+														/>
+													</Grid.Column>
+													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+														<Dropdown
+															placeholder={'Select Item'}
+															style={{ fontSize: '12px', width: '65%'}}
+															disabled={ this.state.genderGarments ? false : true }
+															multiple
+															search
+															selection
+															options={ genderGarments ? genderGarments.map(garment => ({
+																key: garment.key,
+																value: garment.value,
+																text: garment.text,
+															})) : null }
+															onChange={ this.selectGarments }
+															// onChange={ (this.selectGarments }
+														/>
+													</Grid.Column>
+												</Grid.Row>
+											)
 
+										}) }
 
 
 
