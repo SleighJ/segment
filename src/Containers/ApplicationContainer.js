@@ -163,16 +163,30 @@ class ApplicationContainer extends Component {
 			estimatedSegmentSize: 15,
 			selectedGender: null,
 			selectedAssociation: null,
+			genderGarments: null,
 			selectedGarments: [],
 		}
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		// console.log('componentUpdating');
-		// console.log('STATE');
-		// console.log(prevState, this.state);
-		// console.log('PROPS');
-		// console.log(prevProps, this.props);
+		const { selectedGender } = this.state;
+
+		if (!this.state.genderGarments) {
+
+			if (selectedGender) {
+				let genderGarments = clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1);
+				this.setState({
+					genderGarments,
+				})
+			}
+		}
+
+		if (selectedGender != prevState.selectedGender) {
+			this.setState({
+				genderGarments: null,
+			})
+		}
+
 	};
 
 	selectGender = (e, { value }) => {
@@ -188,7 +202,7 @@ class ApplicationContainer extends Component {
 
 	selectAssociation = (event, data) => {
 		const { value } = data;
-		const { key } = data.options.find(o => o.value === value);
+		const { key } = data.options.find(o => o.value == value);
 
 		this.setState({
 			selectedAssociation: {
@@ -198,36 +212,18 @@ class ApplicationContainer extends Component {
 		})
 	};
 
-	returnTypesOfGarment = () => {
-		const { selectedGender, selectedAssociation  } = this.state;
+	selectGarments = (event, data) => {
+		const { value } = data;
+		let key;
 
-		if (selectedGender) {
-			const selection = selectedGender.value;
-			const appropriateGarments = this.sortGarments(selection);
-
-			return appropriateGarments;
+		if (value) {
+			key = data.options.find(o => o.value === value);
 		}
+		console.log(key)
 	};
-
-	sortGarments = (selection) => {
-		return clothingArr.map((garment, i) => {
-			const demographicArray = garment.demographic;
-			const garmentName = garment.text;
-
-			console.log(selection)
-			console.log(demographicArray)
-			console.log(demographicArray.indexOf(selection) != -1)
-			if (demographicArray.indexOf(selection) != -1) {
-				console.log('asdf')
-
-				return <option value={ garmentName } key={i}></option>
-			}
-		})
-	};
-
 
 	render() {
-		const { estimatedSegmentSize, selectedGender, selectedAssociation } = this.state;
+		const { estimatedSegmentSize, selectedGender, selectedAssociation, genderGarments } = this.state;
 
 		console.log(this.state)
 		return(
@@ -325,30 +321,14 @@ class ApplicationContainer extends Component {
 													multiple
 													search
 													selection
-													options={ selectedGender ? clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1) : null }
-													// options={ clothingArr.map(garment => ({
-													//
-													// 	key: garment.key,
-													// 	value: garment.value,
-													// 	text: garment.text,
-													// })) }
+													options={ genderGarments ? genderGarments.map(garment => ({
+														key: garment.key,
+														value: garment.value,
+														text: garment.text,
+													})) : null }
+													onChange={ this.selectGarments }
+													// onChange={ (this.selectGarments }
 												/>
-
-												{/*<Input*/}
-													{/*// id={'input'}*/}
-													{/*placeholder={'Select Item'}*/}
-													{/*style={{ fontSize: '12px', width: '65%'}}*/}
-													{/*list={'clothingArr'}*/}
-													{/*key={'clothingArr.key'}*/}
-													{/*// onClick={()=>this.returnTypesOfGarment() }*/}
-													{/*multiple*/}
-													{/*search*/}
-													{/*selection*/}
-													{/*options={ clothingArr }*/}
-												{/*/>*/}
-												{/*<datalist id='clothingArr'>*/}
-													{/*{ this.returnTypesOfGarment() }*/}
-												{/*</datalist>*/}
 											</Grid.Column>
 										</Grid.Row>
 
