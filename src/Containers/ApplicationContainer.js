@@ -214,12 +214,21 @@ class ApplicationContainer extends Component {
 
 	selectGarments = (event, data) => {
 		const { value } = data;
+		const { genderGarments } = this.state;
+
+		let incomingEntry = [...value].pop();
 		let key;
 
-		if (value) {
-			key = data.options.find(o => o.value === value);
-		}
-		console.log(key)
+		genderGarments.find(garment => garment.value == incomingEntry ? key = garment.key : null);
+
+		let garmentObject = {
+			value: incomingEntry,
+			key: key,
+		};
+
+		this.setState(prevState => ({
+			selectedGarments: [...prevState.selectedGarments, garmentObject]
+		}));
 	};
 
 	render() {
@@ -306,6 +315,7 @@ class ApplicationContainer extends Component {
 													fluid
 													selection
 													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+													disabled={ this.state.selectedGender ? false : true }
 													options={ associationArray.map(association => ({
 														key: association.key,
 														value: association.value,
@@ -318,6 +328,7 @@ class ApplicationContainer extends Component {
 												<Dropdown
 													placeholder={'Select Item'}
 													style={{ fontSize: '12px', width: '65%'}}
+													disabled={ this.state.genderGarments ? false : true }
 													multiple
 													search
 													selection
