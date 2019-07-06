@@ -167,6 +167,14 @@ class ApplicationContainer extends Component {
 		}
 	}
 
+	componentDidUpdate = (prevProps, prevState) => {
+		// console.log('componentUpdating');
+		// console.log('STATE');
+		// console.log(prevState, this.state);
+		// console.log('PROPS');
+		// console.log(prevProps, this.props);
+	};
+
 	selectGender = (e, { value }) => {
 		const id = e.target.id;
 
@@ -178,13 +186,14 @@ class ApplicationContainer extends Component {
 		})
 	};
 
-	selectAssociation = (e, { value }) => {
-		const id = e.target.id;
+	selectAssociation = (event, data) => {
+		const { value } = data;
+		const { key } = data.options.find(o => o.value === value);
 
 		this.setState({
 			selectedAssociation: {
 				value,
-				id,
+				key,
 			}
 		})
 	};
@@ -205,16 +214,22 @@ class ApplicationContainer extends Component {
 			const demographicArray = garment.demographic;
 			const garmentName = garment.text;
 
+			console.log(selection)
+			console.log(demographicArray)
+			console.log(demographicArray.indexOf(selection) != -1)
 			if (demographicArray.indexOf(selection) != -1) {
-				return <option key={`garmentName-${i}`}>{ garmentName }</option>
+				console.log('asdf')
+
+				return <option value={ garmentName } key={i}></option>
 			}
 		})
 	};
 
 
 	render() {
-		const { estimatedSegmentSize, selectedGender } = this.state;
+		const { estimatedSegmentSize, selectedGender, selectedAssociation } = this.state;
 
+		console.log(this.state)
 		return(
 			<div>
 
@@ -256,9 +271,6 @@ class ApplicationContainer extends Component {
 
 
 
-
-
-
 								{/*Products Purchased*/}
 								<Grid container={true} columns={'equal'} centered>
 									<Segment style={{width: '97%', borderRadius: '1', boxShadow: 'none', border: '1.5px solid lightGrey' }}>
@@ -281,13 +293,12 @@ class ApplicationContainer extends Component {
 													fluid
 													selection
 													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-													options={genderArray.map(category => ({
+													options={ genderArray.map(category => ({
 														id: category.key,
 														value: category.value,
 														text: category.text
-													}))}
+													})) }
 													onChange={ this.selectGender }
-													text={ selectedGender ? selectedGender.name : null }
 												/>
 												<Button floated={'left'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}> +More </Button>
 
@@ -300,7 +311,7 @@ class ApplicationContainer extends Component {
 													selection
 													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
 													options={ associationArray.map(association => ({
-														id: association.key,
+														key: association.key,
 														value: association.value,
 														text: association.text
 													})) }
@@ -308,21 +319,38 @@ class ApplicationContainer extends Component {
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
-												<Input
-													id={'input'}
+												<Dropdown
 													placeholder={'Select Item'}
 													style={{ fontSize: '12px', width: '65%'}}
-													list={'clothingArr'}
+													multiple
 													search
-													multiple selection
+													selection
+													options={ selectedGender ? clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1) : null }
+													// options={ clothingArr.map(garment => ({
+													//
+													// 	key: garment.key,
+													// 	value: garment.value,
+													// 	text: garment.text,
+													// })) }
 												/>
-												<datalist id='clothingArr'>
-													{ this.returnTypesOfGarment() }
-												</datalist>
+
+												{/*<Input*/}
+													{/*// id={'input'}*/}
+													{/*placeholder={'Select Item'}*/}
+													{/*style={{ fontSize: '12px', width: '65%'}}*/}
+													{/*list={'clothingArr'}*/}
+													{/*key={'clothingArr.key'}*/}
+													{/*// onClick={()=>this.returnTypesOfGarment() }*/}
+													{/*multiple*/}
+													{/*search*/}
+													{/*selection*/}
+													{/*options={ clothingArr }*/}
+												{/*/>*/}
+												{/*<datalist id='clothingArr'>*/}
+													{/*{ this.returnTypesOfGarment() }*/}
+												{/*</datalist>*/}
 											</Grid.Column>
 										</Grid.Row>
-
-
 
 
 
