@@ -8,78 +8,152 @@ import { Grid, Segment, Dropdown, Button, Divider, Header, Icon, Container, Prog
 
 import './style.css';
 
-
-const wheelCategory = [
-	{
-		key: '0',
-		text: 'Street Wheel',
-		value: 'Street'
-	},
-	{
-		key: '1',
-		text: 'Park Wheel',
-		value: 'Park'
-	},
-	{
-		key: '2',
-		text: 'Cruiser Wheel',
-		value: 'Cruiser'
-	},
-	{
-		key: '3',
-		text: 'Longboard Wheel',
-		value: 'Longboard'
-	},
-	{
-		key: '4',
-		text: 'Sale Wheels',
-		value: 'Sale'
-	}
-];
-
-const productAssociation = [
+const genderArray = [
 	{
 		key: 0,
-		text: 'is one of',
-		value: 'is one of'
+		text: 'Unisex',
+		value: 'Unisex',
 	},
 	{
 		key: 1,
-		text: 'is not of',
-		value: 'is not of'
-	},
-];
-
-const typesOfWheel = [
-
-	{
-		key: 0,
-		text: 'Standard',
-		value: 'Standard'
-	},
-	{
-		key: 1,
-		text: 'Slim',
-		value: 'Slim',
+		text: 'Women',
+		value: 'Women',
 	},
 	{
 		key: 2,
-		text: 'Fat',
-		value: 'Fat',
+		text: 'Men',
+		value: 'Men',
 	},
 	{
 		key: 3,
-		text: 'Conical',
-		value: 'Conical'
+		text: 'Girls',
+		value: 'Girls',
 	},
 	{
 		key: 4,
-		text: 'Side Cut',
-		value: 'Side Cut',
-	}
+		text: 'Boys',
+		value: 'Boys',
+	},
+	{
+		key: 5,
+		text: 'Aliens',
+		value: 'Aliens',
+	},
 ];
 
+const associationArray = [
+	{
+		key: 0,
+		text: 'interested in',
+		value: 'interested in',
+	},
+	{
+		key: 1,
+		text: 'not interested in',
+		value: 'not interested in',
+	},
+];
 
+const clothingArr = [
+	{
+		key: 0,
+		text: 'Pants',
+		value: 'Pants',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},
+	{
+		key: 1,
+		text: 'Jeans',
+		value: 'Jeans',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},{
+		key: 2,
+		text: 'Shorts',
+		value: 'Shorts',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},{
+		key: 3,
+		text: 'Dress Shirts',
+		value: 'Dress Shirts',
+		demographic: [ 'Men', 'Women' ]
+	},{
+		key: 4,
+		text: 'Polo Shirts',
+		value: 'Polo Shirts',
+		demographic: [ 'Men', 'Boys' ]
+
+	},{
+		key: 5,
+		text: 'Tee Shirts',
+		value: 'Tee Shirts',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},{
+		key: 6,
+		text: 'Socks',
+		value: 'Socks',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},{
+		key: 7,
+		text: 'Shoes',
+		value: 'Shoes',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},{
+		key: 8,
+		text: 'Bathing Suits',
+		value: 'Bathing Suits',
+		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
+	},{
+		key: 9,
+		text: 'Skirts',
+		value: 'Skirts',
+		demographic: [ 'Women', 'Girls' ]
+	},{
+		key: 10,
+		text: 'Dresses',
+		value: 'Dresses',
+		demographic: [ 'Women', 'Girls' ]
+	},{
+		key: 11,
+		text: 'Bras',
+		value: 'Bras',
+		demographic: [ 'Women' ]
+	},{
+		key: 12,
+		text: 'Pantyhose',
+		value: 'Pantyhose',
+		demographic: [ 'Women', 'Girls' ]
+	},{
+		key: 13,
+		text: 'Lingerie',
+		value: 'Lingerie',
+		demographic: [ 'Women' ]
+	},{
+		key: 14,
+		text: 'Lazer Guns',
+		value: 'Lazer Guns',
+		demographic: [ 'Aliens' ]
+	},{
+		key: 15,
+		text: 'Spandex Suits',
+		value: 'Spandex Suits',
+		demographic: [ 'Aliens' ]
+	},{
+		key: 16,
+		text: 'Oversized Helmets',
+		value: 'Oversized Helmets',
+		demographic: [ 'Aliens' ]
+	},{
+		key: 17,
+		text: 'Antenna Warmers',
+		value: 'Antenna Warmers',
+		demographic: [ 'Aliens' ]
+	},{
+		key: 18,
+		text: 'Two Finger Gloves',
+		value: 'Two Finger Gloves',
+		demographic: [ 'Aliens' ]
+	}
+];
 
 class ApplicationContainer extends Component {
 	constructor(props){
@@ -87,59 +161,59 @@ class ApplicationContainer extends Component {
 
 		this.state = {
 			estimatedSegmentSize: 15,
-			selectedWheelCategory: null,
-			selectedAssociation: null
+			selectedGender: null,
+			selectedAssociation: null,
+			selectedGarments: [],
 		}
 	}
 
-	selectWheelCategory = (e, {value}) => {
+	selectGender = (e, { value }) => {
+		const id = e.target.id;
+
 		this.setState({
-			selectedWheelCategory: value,
-		});
+			selectedGender: {
+				value,
+				id
+			}
+		})
 	};
 
-	selectAssociation = (e, {value}) => {
-		this.setSTatez
-	}
+	selectAssociation = (e, { value }) => {
+		const id = e.target.id;
+
+		this.setState({
+			selectedAssociation: {
+				value,
+				id,
+			}
+		})
 	};
 
-	returnTypesOfWheel = () => {
-		return typesOfWheel.map((type, i) => {
+	returnTypesOfGarment = () => {
+		const { selectedGender, selectedAssociation  } = this.state;
 
-			const { selectedWheelCategory, selectedAssociation } = this.state;
+		if (selectedGender) {
+			const selection = selectedGender.value;
+			const appropriateGarments = this.sortGarments(selection);
 
-			if (selectedWheelCategory) {
-				switch (selectedWheelCategory) {
-					case ('Street'):
-						console.log('street');
-						break;
-					case ('asdf'):
-						console.log('asdf')
-						break;
-					case ('Cruiser'):
-						console.log('cruiser')
-						break;
-					case ('Longboard'):
-						console.log('longboard');
-						break;
-					case ('Sale'):
-						console.log('sale');
-						break;
-				}
+			return appropriateGarments;
+		}
+	};
 
-			let name = type.text;
+	sortGarments = (selection) => {
+		return clothingArr.map((garment, i) => {
+			const demographicArray = garment.demographic;
+			const garmentName = garment.text;
 
-			return (
-				<option id={`typeOfWheel-${ i }`} value={ name } />
-			)
+			if (demographicArray.indexOf(selection) != -1) {
+				return <option key={`garmentName-${i}`}>{ garmentName }</option>
+			}
 		})
 	};
 
 
 	render() {
-		const { estimatedSegmentSize, selectedWheelCategory } = this.state;
-
-		console.log(this.state);
+		const { estimatedSegmentSize, selectedGender } = this.state;
 
 		return(
 			<div>
@@ -202,15 +276,18 @@ class ApplicationContainer extends Component {
 										<Grid.Row style={{display: 'flex'}}>
 											<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
 												<Dropdown
-													id={'category'}
 													className={'dropdown'}
 													placeholder='Select Category'
 													fluid
 													selection
 													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-													options={wheelCategory}
-													onChange={ this.selectWheelCategory }
-													value={selectedWheelCategory}
+													options={genderArray.map(category => ({
+														id: category.key,
+														value: category.value,
+														text: category.text
+													}))}
+													onChange={ this.selectGender }
+													text={ selectedGender ? selectedGender.name : null }
 												/>
 												<Button floated={'left'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}> +More </Button>
 
@@ -222,8 +299,12 @@ class ApplicationContainer extends Component {
 													fluid
 													selection
 													style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-													options={productAssociation}
-													onChange={this.selectAssociation}
+													options={ associationArray.map(association => ({
+														id: association.key,
+														value: association.value,
+														text: association.text
+													})) }
+													onChange={ this.selectAssociation }
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
@@ -231,15 +312,13 @@ class ApplicationContainer extends Component {
 													id={'input'}
 													placeholder={'Select Item'}
 													style={{ fontSize: '12px', width: '65%'}}
-													list={'typesOfWheel'}
+													list={'clothingArr'}
+													search
+													multiple selection
 												/>
-												<datalist id='typesOfWheel'>
-													{ this.returnTypesOfWheel() }
-													{/*<option value='English' />
-													<option value='Chinese' />
-													<option value='Dutch' />*/}
+												<datalist id='clothingArr'>
+													{ this.returnTypesOfGarment() }
 												</datalist>
-												{/*<datalist id={'typesOfWheel'}> { typesOfWheel.text } </datalist>*/}
 											</Grid.Column>
 										</Grid.Row>
 
