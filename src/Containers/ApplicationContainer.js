@@ -168,11 +168,12 @@ class ApplicationContainer extends Component {
 			selectedAssociation: null,
 			genderGarments: null,
 			selectedGarments: [],
+			conditionHistory: [],
 		}
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedGarments, estimatedSegmentSize, productConditions } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
 		//if no garments of that gender have been selected
 		if (!this.state.genderGarments) {
@@ -180,6 +181,7 @@ class ApplicationContainer extends Component {
 			if (selectedGender) {
 				//lets define that genders garments
 				let genderGarments = clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1);
+				// genderGarments.
 				this.setState({
 					genderGarments,
 				})
@@ -190,10 +192,10 @@ class ApplicationContainer extends Component {
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender) {
 			let calculate;
-			const conditions = productConditions.length;
+			const conditions = conditionHistory.length;
 
 			//if there is only 1 line of product conditions
-			if (conditions == 1) {
+			if (conditions == 0) {
 				let gender = selectedGender.value;
 
 				switch (gender) {
@@ -216,42 +218,21 @@ class ApplicationContainer extends Component {
 						calculate = 100 * .02;
 				}
 			} else {
-				//if product conditions are greater than 1, find out how to calculate
-				console.log('hey')
 				//if product conditions is greater than 1, calculate total from previous state
 				let gender = selectedGender.value;
-				let oldGender = prevState.selectedGender.value;
 				let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
 				switch (gender) {
 					case 'Unisex':
-						console.log(gender, oldGender);
-						console.log(gender == oldGender)
-						//provide use case for if a man or woman is searching gender and wanted to see unisex
-						if (oldGender == 'Men' || 'Women') {
-							calculate = oldEstimatedSegmentSize * .25;
-						} else if (gender == oldGender) {
-							console.log('asdf')
-							calculate = prevState.estimatedSegmentSize;
-						} else {
-							calculate = oldEstimatedSegmentSize * .75;
-						}
+						calculate = oldEstimatedSegmentSize * .75;
 						break;
 
 					case 'Men':
-						if (oldGender == 'Unisex' || 'Men') {
-							calculate = oldEstimatedSegmentSize * .25;
-						} else {
-							calculate = oldEstimatedSegmentSize * .285;
-						}
+						calculate = oldEstimatedSegmentSize * .285;
 						break;
 
 					case 'Women':
-						if (oldGender == 'Unisex' || 'Women') {
-							calculate = oldEstimatedSegmentSize * .25;
-						} else {
-							calculate = oldEstimatedSegmentSize * .465;
-						}
+						calculate = oldEstimatedSegmentSize * .465;
 						break;
 
 					case 'Boys' :
@@ -265,43 +246,41 @@ class ApplicationContainer extends Component {
 					case 'Aliens' :
 						calculate = oldEstimatedSegmentSize * .465;
 				}
+
+				this.setState({
+					estimatedSegmentSize: calculate,
+				});
+
+				//reset gender garments regardless of change
+				this.setState({
+					genderGarments: null,
+				})
 			}
 
-			this.setState({
-				estimatedSegmentSize: calculate,
-			});
+			//if selected garments to not match the previous selected garments, save the new data as selected garments
+			if (selectedGarments != prevState.selectedGarments) {
+				let addingGarments;
+				let newEstimatedSegmentSize;
 
-			//reset gender garments regardless of change
-			this.setState({
-				genderGarments: null,
-			})
-		}
+				if (selectedGarments.length > prevState.selectedGarments.length) {
+					addingGarments = true;
+				} else {
+					addingGarments = false;
+				}
 
-		console.log(selectedGarments, prevState.selectedGarments)
-		//if selected garments to not match the previous selected garments, save the new data as selected garments
-		if (selectedGarments != prevState.selectedGarments) {
-			let addingGarments;
-			let newEstimatedSegmentSize;
+				switch (addingGarments) {
+					case true:
+						newEstimatedSegmentSize = estimatedSegmentSize * .9;
+						break;
 
-
-			if (selectedGarments.length > prevState.selectedGarments.length) {
-				addingGarments = true;
-			} else {
-				addingGarments = false;
+					case false:
+						newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+						break;
+				}
+				this.setState({
+					estimatedSegmentSize: newEstimatedSegmentSize,
+				});
 			}
-
-			switch (addingGarments) {
-				case true:
-					newEstimatedSegmentSize = estimatedSegmentSize * .9;
-				break;
-
-				case false:
-					newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
-				break;
-			}
-			this.setState({
-				estimatedSegmentSize: newEstimatedSegmentSize,
-			});
 		}
 	};
 
@@ -360,7 +339,8 @@ class ApplicationContainer extends Component {
 				selectedGarments: modifiedSelectedGarments,
 			});
 		} else {
-			//if user is adding clothing, add it to the array and correspond estimated segement size to reflect change
+			//if user is adding clothing, add it to the 'selectedGarments' array
+			//so it cannot be selected again
 			this.setState(prevState => ({
 				selectedGarments: [...prevState.selectedGarments, garmentObject]
 			}));
@@ -368,14 +348,41 @@ class ApplicationContainer extends Component {
 	};
 
 	addProductCondition = () => {
+		const { selectedGender, selectedAssociation, selectedGarments } = this.state;
+
+		let stateSnapShot = {
+			selectedGender,
+			selectedAssociation,
+			selectedGarments,
+		};
+
+		let genderHistory = [];
+		genderHistory.push(selectedGender.value);
+
 		this.setState(prevState => ({
 			productConditions: [...prevState.productConditions, '*'],
+			conditionHistory: [...prevState.conditionHistory, stateSnapShot],
+			genderHistory,
+		}))
+	};
+
+	deleteProductCondition = () => {
+		const { selectedGender, selectedAssociation, selectedGarments, conditionHistory, productConditions } = this.state;
+
+		// const conditionHistoryCopy = [...conditionHistory];
+		const productConditionCopy = [...productConditions];
+		// conditionHistoryCopy.pop();
+		productConditions.pop();
+
+		this.setState(prevState => ({
+			// conditionHistory: conditionHistoryCopy,
+			productCondition: productConditionCopy,
 		}))
 	};
 
 	render() {
-		const { estimatedSegmentSize, genderGarments, productConditions } = this.state;
-// console.log(this.state)
+		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, genderHistory } = this.state;
+
 		return(
 			<div>
 
@@ -416,7 +423,6 @@ class ApplicationContainer extends Component {
 
 
 
-
 								{/*Products Purchased*/}
 								<Grid container={true} columns={'equal'} centered>
 									<Segment style={{width: '97%', borderRadius: '1', boxShadow: 'none', border: '1.5px solid lightGrey' }}>
@@ -427,7 +433,7 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 
 											<Grid.Column width={4} style={{width: '100%'}}>
-												<Button floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}> <Icon name={'trash'}></Icon>Delete</Button>
+												<Button onClick={ ()=>this.deleteProductCondition() } floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}> <Icon name={'trash'}></Icon>Delete</Button>
 											</Grid.Column>
 										</Grid.Row>
 
@@ -437,22 +443,24 @@ class ApplicationContainer extends Component {
 												<Grid.Row style={{display: 'flex'}}>
 													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
 														<Dropdown
+															id={i}
 															className={'dropdown'}
 															placeholder='Select Category'
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
 															options={ genderArray.map(category => ({
-																id: category.key,
-																value: category.value,
-																text: category.text
-															})) }
+																	id: category.key,
+																	value: category.value,
+																	text: category.text
+																})) }
 															onChange={ this.selectGender }
 														/>
 														<Button
 															floated={'left'}
 															size={'tiny'}
 															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
+															disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
 															onClick={ ()=>this.addProductCondition() }
 														> +More </Button>
 
@@ -488,7 +496,6 @@ class ApplicationContainer extends Component {
 																text: garment.text,
 															})) : null }
 															onChange={ this.selectGarments }
-															// onChange={ (this.selectGarments }
 														/>
 													</Grid.Column>
 												</Grid.Row>
