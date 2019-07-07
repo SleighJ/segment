@@ -189,90 +189,87 @@ class ApplicationContainer extends Component {
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender) {
+			let calculate;
 			const conditions = productConditions.length;
 
 			//if there is only 1 line of product conditions
-			if (conditions <= 1) {
+			if (conditions == 1) {
 				let gender = selectedGender.value;
 
 				switch (gender) {
 					case 'Unisex':
-						this.setState({
-							estimatedSegmentSize: 100 * .75,
-						});
+						calculate = 100 * .75;
 						break;
-
 					case 'Men':
-						this.setState({
-							estimatedSegmentSize: 100 * .285,
-						});
+						calculate = 100 * .285;
 						break;
-
 					case 'Women':
-						this.setState({
-							estimatedSegmentSize: 100 * .465,
-						});
+						calculate = 100 * .465;
 						break;
-
 					case 'Boys' :
-						this.setState({
-							estimatedSegmentSize: 100 * .095,
-						});
+						calculate = 100 * .095;
 						break;
-
 					case 'Girls' :
-						this.setState({
-							estimatedSegmentSize: 100 * .155,
-						});
+						calculate = 100 * .155;
 						break;
-
 					case 'Aliens' :
-						this.setState({
-							estimatedSegmentSize: 100 * .02,
-						})
+						calculate = 100 * .02;
 				}
 			} else {
+				//if product conditions are greater than 1, find out how to calculate
+				console.log('hey')
 				//if product conditions is greater than 1, calculate total from previous state
 				let gender = selectedGender.value;
+				let oldGender = prevState.selectedGender.value;
+				let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
 				switch (gender) {
 					case 'Unisex':
-						this.setState(prevState => ({
-							estimatedSegmentSize: prevState.estimatedSegmentSize * .75,
-						}));
+						console.log(gender, oldGender);
+						console.log(gender == oldGender)
+						//provide use case for if a man or woman is searching gender and wanted to see unisex
+						if (oldGender == 'Men' || 'Women') {
+							calculate = oldEstimatedSegmentSize * .25;
+						} else if (gender == oldGender) {
+							console.log('asdf')
+							calculate = prevState.estimatedSegmentSize;
+						} else {
+							calculate = oldEstimatedSegmentSize * .75;
+						}
 						break;
 
 					case 'Men':
-						this.setState(prevState => ({
-							estimatedSegmentSize: prevState.estimatedSegmentSize * .285,
-						}));
+						if (oldGender == 'Unisex' || 'Men') {
+							calculate = oldEstimatedSegmentSize * .25;
+						} else {
+							calculate = oldEstimatedSegmentSize * .285;
+						}
 						break;
 
 					case 'Women':
-						this.setState(prevState => ({
-							estimatedSegmentSize: prevState.estimatedSegmentSize * .465,
-						}));
+						if (oldGender == 'Unisex' || 'Women') {
+							calculate = oldEstimatedSegmentSize * .25;
+						} else {
+							calculate = oldEstimatedSegmentSize * .465;
+						}
 						break;
 
 					case 'Boys' :
-						this.setState(prevState => ({
-							estimatedSegmentSize: prevState.estimatedSegmentSize * .095,
-						}));
+						calculate = oldEstimatedSegmentSize * .095;
 						break;
 
 					case 'Girls' :
-						this.setState(prevState => ({
-							estimatedSegmentSize: prevState.estimatedSegmentSize * .155,
-						}));
+						calculate = oldEstimatedSegmentSize * .155;
 						break;
 
 					case 'Aliens' :
-						this.setState(prevState => ({
-							estimatedSegmentSize: prevState.estimatedSegmentSize * .02,
-						}))
+						calculate = oldEstimatedSegmentSize * .465;
 				}
-
 			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			});
 
 			//reset gender garments regardless of change
 			this.setState({
@@ -280,6 +277,7 @@ class ApplicationContainer extends Component {
 			})
 		}
 
+		console.log(selectedGarments, prevState.selectedGarments)
 		//if selected garments to not match the previous selected garments, save the new data as selected garments
 		if (selectedGarments != prevState.selectedGarments) {
 			let addingGarments;
