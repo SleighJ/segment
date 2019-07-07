@@ -191,8 +191,6 @@ class ApplicationContainer extends Component {
 		if (selectedGender != prevState.selectedGender) {
 			const conditions = productConditions.length;
 
-			//TODO: need conditional for if someone is removing items
-
 			//if there is only 1 line of product conditions
 			if (conditions <= 1) {
 				let gender = selectedGender.value;
@@ -234,7 +232,6 @@ class ApplicationContainer extends Component {
 						})
 				}
 			} else {
-
 				//if product conditions is greater than 1, calculate total from previous state
 				let gender = selectedGender.value;
 
@@ -285,7 +282,25 @@ class ApplicationContainer extends Component {
 
 		//if selected garments to not match the previous selected garments, save the new data as selected garments
 		if (selectedGarments != prevState.selectedGarments) {
-			let newEstimatedSegmentSize = estimatedSegmentSize * .9;
+			let addingGarments;
+			let newEstimatedSegmentSize;
+
+
+			if (selectedGarments.length > prevState.selectedGarments.length) {
+				addingGarments = true;
+			} else {
+				addingGarments = false;
+			}
+
+			switch (addingGarments) {
+				case true:
+					newEstimatedSegmentSize = estimatedSegmentSize * .9;
+				break;
+
+				case false:
+					newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+				break;
+			}
 			this.setState({
 				estimatedSegmentSize: newEstimatedSegmentSize,
 			});
@@ -362,7 +377,7 @@ class ApplicationContainer extends Component {
 
 	render() {
 		const { estimatedSegmentSize, genderGarments, productConditions } = this.state;
-console.log(this.state)
+// console.log(this.state)
 		return(
 			<div>
 
