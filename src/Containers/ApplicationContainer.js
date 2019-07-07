@@ -159,6 +159,8 @@ class ApplicationContainer extends Component {
 	constructor(props){
 		super(props);
 
+		this.selectItemBar = React.createRef();
+
 		this.state = {
 			estimatedSegmentSize: 100,
 			productConditions: ['*'],
@@ -170,7 +172,7 @@ class ApplicationContainer extends Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedGarments, estimatedSegmentSize } = this.state;
+		const { selectedGender, selectedGarments, estimatedSegmentSize, productConditions } = this.state;
 
 		//if no garments of that gender have been selected
 		if (!this.state.genderGarments) {
@@ -184,24 +186,104 @@ class ApplicationContainer extends Component {
 			}
 		}
 
-		//if selectedGender has changed, reset the gendersGarments
+
+		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender) {
+			const conditions = productConditions.length;
 
-			let gender = selectedGender.value;
+			//TODO: need conditional for if someone is removing items
 
-			switch (gender) {
-				case 'Men':
-					this.setState(prevState => ({
-						estimatedSegmentSize: prevState.estimatedSegmentSize * .285,
-					}));
-					break;
+			//if there is only 1 line of product conditions
+			if (conditions <= 1) {
+				let gender = selectedGender.value;
+
+				switch (gender) {
+					case 'Unisex':
+						this.setState({
+							estimatedSegmentSize: 100 * .75,
+						});
+						break;
+
+					case 'Men':
+						this.setState({
+							estimatedSegmentSize: 100 * .285,
+						});
+						break;
+
+					case 'Women':
+						this.setState({
+							estimatedSegmentSize: 100 * .465,
+						});
+						break;
+
+					case 'Boys' :
+						this.setState({
+							estimatedSegmentSize: 100 * .095,
+						});
+						break;
+
+					case 'Girls' :
+						this.setState({
+							estimatedSegmentSize: 100 * .155,
+						});
+						break;
+
+					case 'Aliens' :
+						this.setState({
+							estimatedSegmentSize: 100 * .02,
+						})
+				}
+			} else {
+
+				//if product conditions is greater than 1, calculate total from previous state
+				let gender = selectedGender.value;
+
+				switch (gender) {
+					case 'Unisex':
+						this.setState(prevState => ({
+							estimatedSegmentSize: prevState.estimatedSegmentSize * .75,
+						}));
+						break;
+
+					case 'Men':
+						this.setState(prevState => ({
+							estimatedSegmentSize: prevState.estimatedSegmentSize * .285,
+						}));
+						break;
+
+					case 'Women':
+						this.setState(prevState => ({
+							estimatedSegmentSize: prevState.estimatedSegmentSize * .465,
+						}));
+						break;
+
+					case 'Boys' :
+						this.setState(prevState => ({
+							estimatedSegmentSize: prevState.estimatedSegmentSize * .095,
+						}));
+						break;
+
+					case 'Girls' :
+						this.setState(prevState => ({
+							estimatedSegmentSize: prevState.estimatedSegmentSize * .155,
+						}));
+						break;
+
+					case 'Aliens' :
+						this.setState(prevState => ({
+							estimatedSegmentSize: prevState.estimatedSegmentSize * .02,
+						}))
+				}
+
 			}
 
+			//reset gender garments regardless of change
 			this.setState({
 				genderGarments: null,
 			})
 		}
 
+		//if selected garments to not match the previous selected garments, save the new data as selected garments
 		if (selectedGarments != prevState.selectedGarments) {
 			let newEstimatedSegmentSize = estimatedSegmentSize * .9;
 			this.setState({
@@ -235,7 +317,7 @@ class ApplicationContainer extends Component {
 
 	selectGarments = (event, data) => {
 		const { value } = data;
-		const { genderGarments } = this.state;
+		const { genderGarments, selectedGarments } = this.state;
 
 		let incomingEntry = [...value].pop();
 		let key;
@@ -247,9 +329,29 @@ class ApplicationContainer extends Component {
 			key: key,
 		};
 
-		this.setState(prevState => ({
-			selectedGarments: [...prevState.selectedGarments, garmentObject]
-		}));
+		//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
+		if (selectedGarments.length > value.length) {
+			let modifiedSelectedGarments;
+
+			selectedGarments.map((garment, i) => {
+				let name = garment.value;
+
+				if ( value.indexOf(name) == -1 ) {
+					let selectedGarmentsCopy = [...selectedGarments];
+					selectedGarmentsCopy.splice(i, 1);
+					modifiedSelectedGarments = selectedGarmentsCopy;
+				}
+			});
+
+			this.setState({
+				selectedGarments: modifiedSelectedGarments,
+			});
+		} else {
+			//if user is adding clothing, add it to the array and correspond estimated segement size to reflect change
+			this.setState(prevState => ({
+				selectedGarments: [...prevState.selectedGarments, garmentObject]
+			}));
+		}
 	};
 
 	addProductCondition = () => {
@@ -260,9 +362,7 @@ class ApplicationContainer extends Component {
 
 	render() {
 		const { estimatedSegmentSize, genderGarments, productConditions } = this.state;
-
-		console.log(estimatedSegmentSize)
-
+console.log(this.state)
 		return(
 			<div>
 
@@ -368,6 +468,7 @@ class ApplicationContainer extends Component {
 															multiple
 															search
 															selection
+															ref={ this.selectItemBar }
 															options={ genderGarments ? genderGarments.map(garment => ({
 																key: garment.key,
 																value: garment.value,
