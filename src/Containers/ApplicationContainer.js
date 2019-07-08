@@ -6,6 +6,7 @@ import Sidebar from '../Components/Sidebar';
 
 import { Grid, Segment, Dropdown, Button, Divider, Header, Icon, Progress } from 'semantic-ui-react';
 import DatePicker from 'react-date-picker'
+import Calendar from 'react-calendar'
 
 import './style.css';
 
@@ -150,6 +151,34 @@ const clothingArr = [
 	}
 ];
 
+const searchedAndPurchased = [
+	{
+		key: 1,
+		text: 'Searched',
+		value: 'Searched',
+	},{
+		key: 2,
+		text: 'Purchased',
+		value: 'Purchased',
+	}
+];
+
+const onAroundAndBefore = [
+	{
+		key: 1,
+		text: 'On',
+		value: 'On',
+	},{
+		key: 2,
+		text: 'Around',
+		value: 'Around',
+	},{
+		key: 3,
+		text: 'Before',
+		value: 'Before',
+	}
+];
+
 class ApplicationContainer extends Component {
 	constructor(props){
 		super(props);
@@ -164,7 +193,7 @@ class ApplicationContainer extends Component {
 			genderGarments: null,
 			selectedGarments: [],
 			conditionHistory: [],
-			openDatePicker: false,
+			openCalendar: false,
 			startDate: new Date()
 		}
 	}
@@ -392,25 +421,58 @@ class ApplicationContainer extends Component {
 	deleteProductCondition = () => {
 		const { selectedGender, selectedAssociation, selectedGarments, conditionHistory, productConditions } = this.state;
 
-		// const conditionHistoryCopy = [...conditionHistory];
 		const productConditionCopy = [...productConditions];
-		// conditionHistoryCopy.pop();
 		productConditions.pop();
 
 		this.setState(prevState => ({
-			// conditionHistory: conditionHistoryCopy,
 			productCondition: productConditionCopy,
 		}))
 	};
 
-	handleDateChange = (date) => {
+	selectSearchOrPurchase = (event, data) => {
+		const {value} = data;
+		const {key} = data.options.find(o => o.value == value);
+
 		this.setState({
-			startDate: date
+			searchOrPurchase: {
+				key,
+				value,
+			}
 		});
 	};
 
+	selectOnAroundBefore = (event, data) => {
+		const {value} = data;
+		const {key} = data.options.find(o => o.value == value);
+
+		this.setState({
+			onAroundBefore: {
+				key,
+				value,
+			}
+		});
+	};
+
+	openCalendar = () => {
+		this.setState({
+			openCalendar: !this.state.openCalendar,
+		})
+	};
+
+	handleDateChange = (date) => {
+		const { startDate } = this.state;
+
+		if (date < startDate) {
+			this.setState({
+				startDate: date
+			});
+		} else {
+			console.log('nah')
+		}
+	};
+
 	render() {
-		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory } = this.state;
+		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory, startDate } = this.state;
 
 		return(
 			<div>
@@ -568,7 +630,7 @@ class ApplicationContainer extends Component {
 															cleared
 														/>
 													</Grid.Column>
-													{console.log(genderGarments)}
+
 													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
 														<Dropdown
 															id={'asdf-2'}
@@ -608,15 +670,21 @@ class ApplicationContainer extends Component {
 												</Grid.Column>
 											</Grid.Row>
 
+
+
+
+
+
 											<Grid.Row style={{display: 'flex'}}>
 												<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
 													<Dropdown
 														className={'dropdown'}
-														placeholder='Product Purchased'
+														placeholder='Select Interaction'
 														fluid
 														selection
 														style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-														// options={'ca'}
+														options={ searchedAndPurchased }
+														onChange={ this.selectSearchOrPurchase }
 													/>
 												</Grid.Column>
 												<Grid.Column style={{padding: '1%', width: '15%'}} width={5}>
@@ -626,16 +694,24 @@ class ApplicationContainer extends Component {
 														fluid
 														selection
 														style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-														// options={friendOptions}
+														options={ onAroundAndBefore }
+														onChange={ this.selectOnAroundBefore }
 													/>
 												</Grid.Column>
+
 												<Grid.Column style={{padding: '1%', width: '65%'}} width={5} align={'left'}>
-													<DatePicker
-														id={'datepicker'}
+													<Button content={'Select Date'} onClick={ this.openCalendar }/>
+												</Grid.Column>
+												<Grid.Column align={'left'} style={{width: '100%'}}>
+													{ this.state.openCalendar ?
+														<Calendar
 														value={ this.state.startDate }
 														onChange={ this.handleDateChange }
+														maxDate={ this.state.startDate }
 													/>
+													: null }
 												</Grid.Column>
+
 											</Grid.Row>
 
 										</Grid.Row>
@@ -679,11 +755,14 @@ class ApplicationContainer extends Component {
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '65%', color: 'lightGrey'}} width={6} align={'left'}>
-												<DatePicker
-													id={'datepicker'}
-													value={ this.state.startDate }
-													onChange={ this.handleDateChange }
+												<Button
+													content={'Select Date'}
 												/>
+												{/*<Calendar*/}
+													{/*value={ startDate }*/}
+													{/*onChange={ this.handleDateChange }*/}
+													{/*maxDate={ this.state.startDate }*/}
+												{/*/>*/}
 											</Grid.Column>
 										</Grid.Row>
 

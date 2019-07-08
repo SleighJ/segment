@@ -3,9 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="32f5bf7e-bf65-4975-a841-dfb9ecbaf5df" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Containers/ApplicationContainer.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Containers/ApplicationContainer.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -48,14 +46,14 @@
         <counts>
           <entry key="css" value="886" />
           <entry key="html" value="4" />
-          <entry key="js" value="41190" />
+          <entry key="js" value="42218" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
           <entry key="CSS" value="886" />
           <entry key="HTML" value="4" />
-          <entry key="JavaScript" value="41190" />
+          <entry key="JavaScript" value="42218" />
         </counts>
       </usages-collector>
     </session>
@@ -65,8 +63,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Containers/ApplicationContainer.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="215">
-              <caret line="185" selection-start-line="185" selection-end-line="185" />
+            <state relative-caret-position="260">
+              <caret line="704" column="96" selection-start-line="704" selection-start-column="96" selection-end-line="704" selection-end-column="96" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
@@ -123,7 +121,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>gender</find>
       <find>typesOfWheel</find>
       <find>selectedAssociation</find>
       <find>association</find>
@@ -153,6 +150,7 @@
       <find>console.log</find>
       <find>default</find>
       <find>genderGarments</find>
+      <find>openCalendar</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -273,7 +271,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="123345000" />
+    <option name="totallyTimeSpent" value="125734000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1680" height="1050" extended-state="0" />
@@ -366,8 +364,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Containers/ApplicationContainer.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="215">
-          <caret line="185" selection-start-line="185" selection-end-line="185" />
+        <state relative-caret-position="260">
+          <caret line="704" column="96" selection-start-line="704" selection-start-column="96" selection-end-line="704" selection-end-column="96" />
           <folding>
             <element signature="e#0#41#0" expanded="true" />
           </folding>
