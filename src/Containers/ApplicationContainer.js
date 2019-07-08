@@ -446,11 +446,9 @@ class ApplicationContainer extends Component {
 													onClick={ ()=>this.deleteProductCondition() }
 													floated={'right'} size={'tiny'}
 													style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}
-													disabled={ conditionHistory.length < 1 ? false : true }
+													disabled={ conditionHistory.length == 1 ? productConditions.length > 1 ? false : true : true }
 												>
-												{console.log(productConditions.length)}
-
-													<Icon name={'trash'}></Icon>Delete</Button>
+												<Icon name={'trash'}></Icon>Delete</Button>
 											</Grid.Column>
 										</Grid.Row>
 
