@@ -187,7 +187,6 @@ class ApplicationContainer extends Component {
 
 		this.state = {
 			estimatedSegmentSize: 100,
-			productConditions: ['*'],
 			selectedGender: null,
 			selectedAssociation: null,
 			genderGarments: null,
@@ -198,16 +197,18 @@ class ApplicationContainer extends Component {
 		}
 	}
 
+	//TODO:find where selectedGarments is getting set to [] to early
+
 	componentDidUpdate = (prevProps, prevState) => {
 		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
 		if (conditionHistory.length != prevState.conditionHistory.length) {
-			console.log('yes')
+			// console.log('1')
 			this.setState({
 				selectedGarments: [],
 				selectedAssociation: [],
 				selectedGender: null,
-			}, ()=>selectedGarments)
+			})
 		}
 
 		//if no garments of that gender have been selected
@@ -290,31 +291,33 @@ class ApplicationContainer extends Component {
 				}
 			}
 
-			//if selected garments to not match the previous selected garments, save the new data as selected garments
-			if (selectedGarments != prevState.selectedGarments) {
-				let addingGarments;
-				let newEstimatedSegmentSize;
+			if (selectedGarments) {
+				//if selected garments to not match the previous selected garments, save the new data as selected garments
+				if (selectedGarments != prevState.selectedGarments) {
+					let addingGarments;
+					let newEstimatedSegmentSize;
 
-				if (selectedGarments.length > prevState.selectedGarments.length) {
-					addingGarments = true;
-				} else {
-					addingGarments = false;
+					if (selectedGarments.length > prevState.selectedGarments.length) {
+						addingGarments = true;
+					} else {
+						addingGarments = false;
+					}
+
+					switch (addingGarments) {
+						case true:
+							newEstimatedSegmentSize = estimatedSegmentSize * .9;
+							break;
+
+						case false:
+							newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+							break;
+					}
+					this.setState({
+						estimatedSegmentSize: newEstimatedSegmentSize,
+					});
 				}
-
-				switch (addingGarments) {
-					case true:
-						newEstimatedSegmentSize = estimatedSegmentSize * .9;
-						break;
-
-					case false:
-						newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
-						break;
-				}
-				this.setState({
-					estimatedSegmentSize: newEstimatedSegmentSize,
-				});
 			}
-		}
+			}
 	};
 
 	selectGender = (event, data) => {
@@ -347,6 +350,9 @@ class ApplicationContainer extends Component {
 	selectGarments = (event, data) => {
 		const { value } = data;
 
+		// console.log(data)
+		// console.log(data.value)
+
 		const { genderGarments, selectedGarments, conditionHistory } = this.state;
 		let key;
 		let incomingEntry = [...value].pop();
@@ -356,6 +362,10 @@ class ApplicationContainer extends Component {
 			value: incomingEntry,
 			key: key,
 		};
+
+		if (conditionHistory.length > 0) {
+			data.options = [];
+		}
 
 		//if garments are selected
 		if (selectedGarments) {
@@ -375,16 +385,19 @@ class ApplicationContainer extends Component {
 					}
 				});
 
+				// console.log('2')
+				// console.log(modifiedSelectedGarments)
 				this.setState({
 					selectedGarments: modifiedSelectedGarments,
 				});
 			}
 
 			if (selectedGarments.length <= value.length) {
+				// console.log('3')
 				//if user is adding clothing, add it to the 'selectedGarments' array
 				//so it cannot be selected again
 				this.setState(prevState => ({
-					selectedGarments: [...prevState.selectedGarments, garmentObject]
+					selectedGarments: [...prevState.selectedGarments, incomingEntry]
 				}));
 			}
 		}
@@ -392,15 +405,11 @@ class ApplicationContainer extends Component {
 
 	addProductCondition = () => {
 		const { selectedGender, selectedAssociation, selectedGarments } = this.state;
-
-		let genderHistory = [];
 		let renderGarmentHistory = [];
-
-		genderHistory.push(selectedGender.value);
 
 		//for rendering past choices for garments
 		selectedGarments.map((garment, i) => {
-			renderGarmentHistory.push(garment.value)
+			renderGarmentHistory.push(garment)
 		});
 
 		let stateSnapShot = {
@@ -410,22 +419,22 @@ class ApplicationContainer extends Component {
 			renderGarmentHistory,
 		};
 
+		// console.log('4')
+
 		this.setState(prevState => ({
-			productConditions: [...prevState.productConditions, '*'],
 			conditionHistory: [...prevState.conditionHistory, stateSnapShot],
 			selectedGarments: [],
-			genderHistory,
 		}))
 	};
 
 	deleteProductCondition = () => {
-		const { selectedGender, selectedAssociation, selectedGarments, conditionHistory, productConditions } = this.state;
+		const { conditionHistory } = this.state;
 
-		const productConditionCopy = [...productConditions];
-		productConditions.pop();
+		const conditionHistoryCopy = [...conditionHistory];
+		conditionHistory.pop();
 
 		this.setState(prevState => ({
-			productCondition: productConditionCopy,
+			productCondition: conditionHistoryCopy,
 		}))
 	};
 
@@ -472,7 +481,7 @@ class ApplicationContainer extends Component {
 	};
 
 	render() {
-		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory, startDate } = this.state;
+		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory } = this.state;
 
 		return(
 			<div>
@@ -538,6 +547,8 @@ class ApplicationContainer extends Component {
 											const selectedAssociationHistory = row.selectedAssociation;
 											const renderGarmentHistory = row.renderGarmentHistory;
 
+											// console.log(row)
+
 											return (
 												<Grid.Row key={i} style={{display: 'flex'}}>
 													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
@@ -545,6 +556,7 @@ class ApplicationContainer extends Component {
 															key={i}
 															className={'dropdown'}
 															placeholder={ selectedGenderHistory.text }
+															disabled={ true }
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
@@ -565,6 +577,7 @@ class ApplicationContainer extends Component {
 															placeholder={ selectedAssociationHistory.value }
 															fluid
 															selection
+															disabled={ true }
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
 															disabled={ this.state.selectedGender ? false : true }
 															onChange={ this.selectAssociation }
@@ -573,9 +586,8 @@ class ApplicationContainer extends Component {
 													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
 														<Dropdown
 															placeholder={ renderGarmentHistory.join(', ') }
-															// placeholder={'shite bro'}
 															style={{ fontSize: '12px', width: '65%'}}
-															disabled={ this.state.genderGarments ? false : true }
+															disabled={ true }
 															multiple
 															search
 															selection
@@ -586,7 +598,58 @@ class ApplicationContainer extends Component {
 											)
 
 										}) :
-										null
+											<Grid.Row style={{display: 'flex'}}>
+												<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
+													<Dropdown
+														id={'asdf'}
+														className={'dropdown'}
+														placeholder='Select Category'
+														fluid
+														selection
+														style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+														options={ genderArray }
+														value={ selectedGender ? selectedGender.text : null }
+														onChange={ this.selectGender }
+													/>
+
+													<Button
+														floated={'left'}
+														size={'tiny'}
+														style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
+														disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
+														onClick={ ()=>this.addProductCondition() }
+													> +More </Button>
+
+												</Grid.Column>
+												<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
+													<Dropdown
+														id={'asdf-1'}
+														className={'dropdown'}
+														placeholder='Association'
+														fluid
+														selection
+														style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+														disabled={ genderGarments ? false : true }
+														options={ associationArray }
+														onChange={ this.selectAssociation }
+														cleared
+													/>
+												</Grid.Column>
+
+												<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+													{/*{console.log(this.state)}*/}
+													<Dropdown
+														id={'asdf-2'}
+														placeholder={'Select Item'}
+														style={{ fontSize: '12px', width: '65%'}}
+														multiple
+														selection
+														options={ selectedGender ? genderGarments : null }
+														onChange={ this.selectGarments }
+														// content={ !this.state.selectedGender ? null : 'asdf' }
+													/>
+												</Grid.Column>
+											</Grid.Row>
 									}
 
 
@@ -604,6 +667,7 @@ class ApplicationContainer extends Component {
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
 															options={ genderArray }
+															value={ selectedGender ? selectedGender.text : null }
 															onChange={ this.selectGender }
 														/>
 
@@ -624,7 +688,7 @@ class ApplicationContainer extends Component {
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-															disabled={ this.state.selectedGender ? false : true }
+															disabled={ genderGarments ? false : true }
 															options={ associationArray }
 															onChange={ this.selectAssociation }
 															cleared
@@ -632,15 +696,17 @@ class ApplicationContainer extends Component {
 													</Grid.Column>
 
 													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+														{/*{console.log(this.state)}*/}
 														<Dropdown
 															id={'asdf-2'}
 															placeholder={'Select Item'}
 															style={{ fontSize: '12px', width: '65%'}}
-															disabled={ this.state.genderGarments ? false : true }
 															multiple
 															selection
 															options={ genderGarments }
 															onChange={ this.selectGarments }
+															content={ selectedGarments }
+															value={ selectedGarments }
 														/>
 													</Grid.Column>
 												</Grid.Row>
