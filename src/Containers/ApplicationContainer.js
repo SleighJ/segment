@@ -173,10 +173,12 @@ class ApplicationContainer extends Component {
 		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
 		if (conditionHistory.length != prevState.conditionHistory.length) {
-			console.log('selectedGarments reset in didUpdate')
+			console.log('selectedGarments, selectGender and selectAssociation reset in didUpdate')
 			// console.log(conditionHistory.length, prevState.conditionHistory.length)
 			this.setState({
 				selectedGarments: [],
+				selectedAssociation: [],
+				selectedGender: [],
 			}, ()=>selectedGarments)
 		}
 
@@ -328,10 +330,8 @@ class ApplicationContainer extends Component {
 		//if garments are selected
 		if (selectedGarments) {
 
-			console.log('garment vs  value')
-			console.log(selectedGarments, value)
-			// console.log(selectedGarments.length, value.length);
-			// console.log(selectedGarments.length > value.length)
+			// console.log('garment vs  value')
+			// console.log(selectedGarments, value)
 
 			//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
 			if (selectedGarments.length >= value.length) {
@@ -344,8 +344,6 @@ class ApplicationContainer extends Component {
 
 					if ( value.indexOf(name) == -1 ) {
 						let selectedGarmentsCopy = [...selectedGarments];
-						// console.log('removing where i = ', i)
-						// console.log(selectedGarmentsCopy.splice(i, 0))
 						selectedGarmentsCopy.splice(i, 1);
 						modifiedSelectedGarments = selectedGarmentsCopy;
 					}
@@ -359,7 +357,7 @@ class ApplicationContainer extends Component {
 			}
 
 			if (selectedGarments.length <= value.length) {
-				console.log('firing')
+				// console.log('adding')
 				//if user is adding clothing, add it to the 'selectedGarments' array
 				//so it cannot be selected again
 				this.setState(prevState => ({
