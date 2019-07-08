@@ -408,19 +408,19 @@ class ApplicationContainer extends Component {
 		}))
 	};
 
-	deleteProductCondition = () => {
+	deleteProductCondition = (event, data) => {
 		const { conditionHistory } = this.state;
+		const { id } = data;
 
 		const conditionHistoryCopy = [...conditionHistory];
+		conditionHistoryCopy.splice(id, 1);
+
+		console.log('history vs copy')
+		console.log(conditionHistory)
 		console.log(conditionHistoryCopy)
-		console.log(conditionHistory.pop())
-		conditionHistory.pop();
-
-		//TODO: if a condition is being created, remove it - if it is not being created, remove the last entry.
-
 
 		this.setState(prevState => ({
-			productCondition: conditionHistoryCopy,
+			conditionHistory: conditionHistoryCopy,
 		}))
 	};
 
@@ -513,16 +513,6 @@ class ApplicationContainer extends Component {
 											<Grid.Column width={12} style={{width: '100%'}}>
 												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%'}}>Products purchased <span style={{color: 'lightGrey'}}> - What products have they interacted with? </span> </Header>
 											</Grid.Column>
-
-											<Grid.Column width={4} style={{width: '100%'}}>
-												<Button
-													onClick={ ()=>this.deleteProductCondition() }
-													floated={'right'} size={'tiny'}
-													style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}
-													disabled={ conditionHistory.length > 0 ? false : true }
-												>
-												<Icon name={'trash'}></Icon>Delete</Button>
-											</Grid.Column>
 										</Grid.Row>
 
 										{ conditionHistory.map((row, i) => {
@@ -532,8 +522,8 @@ class ApplicationContainer extends Component {
 											const renderGarmentHistory = row.renderGarmentHistory;
 
 											return (
-												<Grid.Row key={i} style={{display: 'flex'}}>
-													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
+												<Grid.Row key={i} style={{ display: 'flex', height: '13%' }}>
+													<Grid.Column style={{ padding: '1%', width: '20%' }} width={3}>
 														<Dropdown
 															key={i}
 															className={'dropdown'}
@@ -541,40 +531,45 @@ class ApplicationContainer extends Component {
 															disabled={ true }
 															fluid
 															selection
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%' }}
 															onChange={ this.selectGender }
 														/>
-														<Button
-															floated={'left'}
-															size={'tiny'}
-															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
-															disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
-															onClick={ this.addProductCondition }
-														> +More </Button>
 
 													</Grid.Column>
-													<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
+													<Grid.Column style={{padding: '1%', width: '15%',}} width={3}>
 														<Dropdown
 															className={'dropdown'}
 															placeholder={ selectedAssociationHistory.value }
 															fluid
 															selection
 															disabled={ true }
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%' }}
 															disabled={ this.state.selectedGender ? false : true }
 															onChange={ this.selectAssociation }
 														/>
 													</Grid.Column>
-													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+													<Grid.Column style={{padding: '1%', width: '55%'}} width={3}>
 														<Dropdown
 															placeholder={ renderGarmentHistory.join(', ') }
-															style={{ fontSize: '12px', width: '65%'}}
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%' }}
 															disabled={ true }
 															multiple
 															search
 															selection
 															onChange={ this.selectGarments }
 														/>
+													</Grid.Column>
+													<Grid.Column align={'center'} style={{padding: '1%', width: '10%'}} width={3}>
+														<Button
+															id={i}
+															align={'center'}
+															onClick={ this.deleteProductCondition }
+															floated={'right'} size={'tiny'}
+															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '100%', height: '100%'}}
+															disabled={ conditionHistory.length > 0 ? false : true }
+														>
+															<Icon name={'trash'}></Icon>
+														</Button>
 													</Grid.Column>
 												</Grid.Row>
 											)
@@ -583,7 +578,7 @@ class ApplicationContainer extends Component {
 									}
 
 									<Grid.Row style={{display: 'flex'}}>
-										<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
+										<Grid.Column style={{padding: '1%', width: '20%'}} width={3}>
 											<Dropdown
 												id={'asdf'}
 												className={'dropdown'}
@@ -605,7 +600,7 @@ class ApplicationContainer extends Component {
 											> +More </Button>
 
 										</Grid.Column>
-										<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
+										<Grid.Column style={{padding: '1%', width: '15%',}} width={3}>
 											<Dropdown
 												id={'asdf-1'}
 												className={'dropdown'}
@@ -616,15 +611,14 @@ class ApplicationContainer extends Component {
 												disabled={ genderGarments ? false : true }
 												options={ associationArray }
 												onChange={ this.selectAssociation }
-												cleared
 											/>
 										</Grid.Column>
 
-										<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+										<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={3}>
 											<Dropdown
 												id={'asdf-2'}
 												placeholder={'Select Item'}
-												style={{ fontSize: '12px', width: '65%'}}
+												style={{ fontSize: '12px', maxWidth: '100%' }}
 												multiple
 												selection
 												options={ genderGarments }
@@ -659,11 +653,6 @@ class ApplicationContainer extends Component {
 													<Button floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey'}}> <Icon name={'time'}> </Icon>Remove this time period</Button>
 												</Grid.Column>
 											</Grid.Row>
-
-
-
-
-
 
 											<Grid.Row style={{display: 'flex'}}>
 												<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>

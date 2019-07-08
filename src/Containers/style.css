@@ -20,3 +20,12 @@
 .react-date-picker__inputGroup__input {
     color: lightgrey;
 }
+
+.ui.default.dropdown:not(.button)>.text, .ui.dropdown:not(.button)>.default.text {
+    display: contents;
+}
+
+.ui.multiple.search.dropdown>input.search {
+    width: 0;
+    margin: 0;
+}
