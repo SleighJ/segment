@@ -5,6 +5,7 @@ import Topbar from '../Components/Topbar';
 import Sidebar from '../Components/Sidebar';
 
 import { Grid, Segment, Dropdown, Button, Divider, Header, Icon, Container, Progress, Input } from 'semantic-ui-react';
+import DatePicker from 'react-date-picker'
 
 import './style.css';
 
@@ -163,6 +164,8 @@ class ApplicationContainer extends Component {
 			genderGarments: null,
 			selectedGarments: [],
 			conditionHistory: [],
+			openDatePicker: false,
+			startDate: new Date()
 		}
 	}
 
@@ -371,8 +374,23 @@ class ApplicationContainer extends Component {
 		}))
 	};
 
+	openDatePicker = () => {
+		console.log('called')
+		this.setState({
+			openDatePicker: !this.state.openDatePicker,
+		})
+	};
+
+	handleDateChange = (date) => {
+		this.setState({
+			startDate: date
+		});
+	};
+
 	render() {
-		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, genderHistory } = this.state;
+		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory } = this.state;
+
+		console.log(this.state.conditionHistory)
 
 		return(
 			<div>
@@ -424,7 +442,15 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 
 											<Grid.Column width={4} style={{width: '100%'}}>
-												<Button onClick={ ()=>this.deleteProductCondition() } floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}> <Icon name={'trash'}></Icon>Delete</Button>
+												<Button
+													onClick={ ()=>this.deleteProductCondition() }
+													floated={'right'} size={'tiny'}
+													style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}
+													disabled={ conditionHistory.length < 1 ? false : true }
+												>
+												{console.log(productConditions.length)}
+
+													<Icon name={'trash'}></Icon>Delete</Button>
 											</Grid.Column>
 										</Grid.Row>
 
@@ -531,14 +557,11 @@ class ApplicationContainer extends Component {
 														// options={friendOptions}
 													/>
 												</Grid.Column>
-												<Grid.Column style={{padding: '1%', width: '65%'}} width={5}>
-													<Dropdown
-														className={'dropdown'}
-														placeholder='6/6/06'
-														fluid
-														selection
-														style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '32.5%'}}
-														// options={friendOptions}
+												<Grid.Column style={{padding: '1%', width: '65%'}} width={5} align={'left'}>
+													<DatePicker
+														id={'datepicker'}
+														value={ this.state.startDate }
+														onChange={ this.handleDateChange }
 													/>
 												</Grid.Column>
 											</Grid.Row>
@@ -546,6 +569,7 @@ class ApplicationContainer extends Component {
 										</Grid.Row>
 									</Segment>
 								</Grid>
+
 
 								{/*Technology*/}
 								<Grid container={true} centered>
@@ -582,14 +606,11 @@ class ApplicationContainer extends Component {
 													// options={friendOptions}
 												/>
 											</Grid.Column>
-											<Grid.Column style={{padding: '1%', width: '65%'}} width={6}>
-												<Dropdown
-													className={'dropdown'}
-													placeholder='6/6/06'
-													fluid
-													selection
-													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '32.5%'}}
-													// options={friendOptions}
+											<Grid.Column style={{padding: '1%', width: '65%', color: 'lightGrey'}} width={6} align={'left'}>
+												<DatePicker
+													id={'datepicker'}
+													value={ this.state.startDate }
+													onChange={ this.handleDateChange }
 												/>
 											</Grid.Column>
 										</Grid.Row>

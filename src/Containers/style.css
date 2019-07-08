@@ -9,3 +9,14 @@
 #input::placeholder {
     color: black;
 }
+.react-date-picker__wrapper {
+    border: 2px solid lightgrey;
+    border-radius: .3rem;
+    font-family: IBM Plex Sans;
+    color: lightgrey;
+    font-size: .75rem;
+}
+
+.react-date-picker__inputGroup__input {
+    color: lightgrey;
+}
