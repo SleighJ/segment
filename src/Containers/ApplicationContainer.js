@@ -278,13 +278,18 @@ class ApplicationContainer extends Component {
 		}
 	};
 
-	selectGender = (e, { value }) => {
-		const id = e.target.id;
+	selectGender = (event, data) => {
+		console.log(event, data)
+		const { value } = data;
+		const { key, text } = data.options.find(o => o.value == value);
+		// const id = e.target.id;
+		console.log(value, key)
 
 		this.setState({
 			selectedGender: {
+				key,
 				value,
-				id
+				text,
 			}
 		})
 	};
@@ -295,8 +300,8 @@ class ApplicationContainer extends Component {
 
 		this.setState({
 			selectedAssociation: {
-				value,
 				key,
+				value,
 			}
 		})
 	};
@@ -346,16 +351,24 @@ class ApplicationContainer extends Component {
 
 		let stateSnapShot = {
 			selectedGender,
-			selectedAssociation,
-			selectedGarments,
+			selectedAssociation: selectedAssociation,
+			selectedGarments: [selectedGarments],
 		};
 
 		let genderHistory = [];
+		let renderGarmentHistory = [];
+
 		genderHistory.push(selectedGender.value);
+
+		//for rendering past choices for garments
+		selectedGarments.map((garment, i) => {
+			renderGarmentHistory.push(garment.value)
+		});
 
 		this.setState(prevState => ({
 			productConditions: [...prevState.productConditions, '*'],
 			conditionHistory: [...prevState.conditionHistory, stateSnapShot],
+			renderGarmentHistory,
 			genderHistory,
 		}))
 	};
@@ -388,10 +401,9 @@ class ApplicationContainer extends Component {
 	};
 
 	render() {
-		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory } = this.state;
+		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory, renderGarmentHistory } = this.state;
 
-		console.log(this.state.conditionHistory)
-
+		console.log(conditionHistory)
 		return(
 			<div>
 
@@ -452,22 +464,101 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 										</Grid.Row>
 
-										{ productConditions.map((row, i) => {
+										{ conditionHistory ? conditionHistory.map((row, i) => {
 
+
+											const selectedGenderHistory = row.selectedGender;
+											const selectedAssociationHistory = row.selectedAssociation;
+											const selectedGarmentsHistory = row.selectedGarments;
+
+												// { selectedGenderHistory.map((jj, i) => {
+												// 	console.log(jj, i)
+												// }) }
 											return (
+												<Grid.Row key={i} style={{display: 'flex'}}>
+													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
+														<Dropdown
+															key={i}
+															className={'dropdown'}
+															placeholder={ selectedGenderHistory.text }
+															fluid
+															selection
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+															// options={ selectedGenderHistory.map(gender => ({
+															// 	key: gender.key,
+															// 	value: gender.value,
+															// 	text: gender.text
+															// })) }
+															onChange={ this.selectGender }
+														/>
+														<Button
+															floated={'left'}
+															size={'tiny'}
+															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
+															disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
+															onClick={ ()=>this.addProductCondition() }
+														> +More </Button>
+
+													</Grid.Column>
+													<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
+														<Dropdown
+															className={'dropdown'}
+															placeholder={ selectedAssociationHistory.value }
+															fluid
+															selection
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+															disabled={ this.state.selectedGender ? false : true }
+															// options={ selectedAssociationHistory.map(association => ({
+															// 	key: association.key,
+															// 	value: association.value,
+															// 	text: association.text
+															// })) }
+															onChange={ this.selectAssociation }
+														/>
+													</Grid.Column>
+													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+														<Dropdown
+															placeholder={ renderGarmentHistory.join(', ') }
+															// placeholder={'shite bro'}
+															style={{ fontSize: '12px', width: '65%'}}
+															disabled={ this.state.genderGarments ? false : true }
+															multiple
+															search
+															selection
+															ref={ this.selectItemBar }
+															// options={ selectedGarmentsHistory.map(garment => ({
+															// 	key: garment.key,
+															// 	value: garment.value,
+															// 	text: garment.text,
+															// })) }
+															onChange={ this.selectGarments }
+														/>
+													</Grid.Column>
+												</Grid.Row>
+											)
+
+										}) :
+										null
+									}
+
+
+										{/*{ productConditions.map((row, i) => {*/}
+
+											{/*Association, Gender, Garments*/}
+
+											{/*return (*/}
 												<Grid.Row style={{display: 'flex'}}>
 													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
 														<Dropdown
-															id={i}
 															className={'dropdown'}
 															placeholder='Select Category'
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-															options={ genderArray.map(category => ({
-																	id: category.key,
-																	value: category.value,
-																	text: category.text
+															options={ genderArray.map(gender => ({
+																	key: gender.key,
+																	value: gender.value,
+																	text: gender.text
 																})) }
 															onChange={ this.selectGender }
 														/>
@@ -514,9 +605,9 @@ class ApplicationContainer extends Component {
 														/>
 													</Grid.Column>
 												</Grid.Row>
-											)
+											{/*)*/}
 
-										}) }
+										{/*}) }*/}
 
 
 
