@@ -339,20 +339,11 @@ class ApplicationContainer extends Component {
 
 	selectGarments = (event, data) => {
 		const { value } = data;
-
 		const { genderGarments, selectedGarments, conditionHistory } = this.state;
+
 		let key;
 		let incomingEntry = [...value].pop();
 		genderGarments.find(garment => garment.value == incomingEntry ? key = garment.key : null);
-
-		let garmentObject = {
-			value: incomingEntry,
-			key: key,
-		};
-
-		if (conditionHistory.length > 0) {
-			data.options = [];
-		}
 
 		//if garments are selected
 		if (selectedGarments) {
@@ -414,10 +405,6 @@ class ApplicationContainer extends Component {
 
 		const conditionHistoryCopy = [...conditionHistory];
 		conditionHistoryCopy.splice(id, 1);
-
-		console.log('history vs copy')
-		console.log(conditionHistory)
-		console.log(conditionHistoryCopy)
 
 		this.setState(prevState => ({
 			conditionHistory: conditionHistoryCopy,
