@@ -203,7 +203,6 @@ class ApplicationContainer extends Component {
 		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
 		if (conditionHistory.length != prevState.conditionHistory.length) {
-			// console.log('1')
 			this.setState({
 				selectedGarments: [],
 				selectedAssociation: [],
@@ -350,9 +349,6 @@ class ApplicationContainer extends Component {
 	selectGarments = (event, data) => {
 		const { value } = data;
 
-		// console.log(data)
-		// console.log(data.value)
-
 		const { genderGarments, selectedGarments, conditionHistory } = this.state;
 		let key;
 		let incomingEntry = [...value].pop();
@@ -385,17 +381,13 @@ class ApplicationContainer extends Component {
 					}
 				});
 
-				// console.log('2')
-				// console.log(modifiedSelectedGarments)
 				this.setState({
 					selectedGarments: modifiedSelectedGarments,
 				});
 			}
 
+			//if user is adding clothing, add it to the 'selectedGarments' array
 			if (selectedGarments.length <= value.length) {
-				// console.log('3')
-				//if user is adding clothing, add it to the 'selectedGarments' array
-				//so it cannot be selected again
 				this.setState(prevState => ({
 					selectedGarments: [...prevState.selectedGarments, incomingEntry]
 				}));
@@ -418,8 +410,6 @@ class ApplicationContainer extends Component {
 			selectedGarments: [selectedGarments],
 			renderGarmentHistory,
 		};
-
-		// console.log('4')
 
 		this.setState(prevState => ({
 			conditionHistory: [...prevState.conditionHistory, stateSnapShot],
@@ -475,8 +465,6 @@ class ApplicationContainer extends Component {
 			this.setState({
 				startDate: date
 			});
-		} else {
-			console.log('nah')
 		}
 	};
 
@@ -546,8 +534,6 @@ class ApplicationContainer extends Component {
 											const selectedGenderHistory = row.selectedGender;
 											const selectedAssociationHistory = row.selectedAssociation;
 											const renderGarmentHistory = row.renderGarmentHistory;
-
-											// console.log(row)
 
 											return (
 												<Grid.Row key={i} style={{display: 'flex'}}>
@@ -637,7 +623,6 @@ class ApplicationContainer extends Component {
 												</Grid.Column>
 
 												<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
-													{/*{console.log(this.state)}*/}
 													<Dropdown
 														id={'asdf-2'}
 														placeholder={'Select Item'}
@@ -646,7 +631,6 @@ class ApplicationContainer extends Component {
 														selection
 														options={ selectedGender ? genderGarments : null }
 														onChange={ this.selectGarments }
-														// content={ !this.state.selectedGender ? null : 'asdf' }
 													/>
 												</Grid.Column>
 											</Grid.Row>
@@ -696,7 +680,6 @@ class ApplicationContainer extends Component {
 													</Grid.Column>
 
 													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
-														{/*{console.log(this.state)}*/}
 														<Dropdown
 															id={'asdf-2'}
 															placeholder={'Select Item'}
