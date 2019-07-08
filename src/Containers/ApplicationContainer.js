@@ -172,6 +172,14 @@ class ApplicationContainer extends Component {
 	componentDidUpdate = (prevProps, prevState) => {
 		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
+		if (conditionHistory.length != prevState.conditionHistory.length) {
+			console.log('selectedGarments reset in didUpdate')
+			// console.log(conditionHistory.length, prevState.conditionHistory.length)
+			this.setState({
+				selectedGarments: [],
+			}, ()=>selectedGarments)
+		}
+
 		//if no garments of that gender have been selected
 		if (!this.state.genderGarments) {
 			//but a gender has been selected
@@ -184,7 +192,6 @@ class ApplicationContainer extends Component {
 				})
 			}
 		}
-
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender) {
@@ -250,6 +257,9 @@ class ApplicationContainer extends Component {
 				});
 			}
 
+			// console.log('yolo')
+			// console.log(selectedGarments, prevState.selectedGarments)
+
 			//if selected garments to not match the previous selected garments, save the new data as selected garments
 			if (selectedGarments != prevState.selectedGarments) {
 				let addingGarments;
@@ -304,40 +314,52 @@ class ApplicationContainer extends Component {
 
 	selectGarments = (event, data) => {
 		const { value } = data;
-		// const { key } = data.options.find(o => o.value == value);
 		const { genderGarments, selectedGarments } = this.state;
 
 		let key;
-
 		let incomingEntry = [...value].pop();
-
 		genderGarments.find(garment => garment.value == incomingEntry ? key = garment.key : null);
-
 
 		let garmentObject = {
 			value: incomingEntry,
 			key: key,
 		};
 
+		//if garments are selected
 		if (selectedGarments) {
+
+			console.log('garment vs  value')
+			console.log(selectedGarments, value)
+			// console.log(selectedGarments.length, value.length);
+			// console.log(selectedGarments.length > value.length)
+
 			//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
-			if (selectedGarments.length > value.length) {
-				let modifiedSelectedGarments;
+			if (selectedGarments.length >= value.length) {
+				let modifiedSelectedGarments = [];
 
 				selectedGarments.map((garment, i) => {
 					let name = garment.value;
 
+					console.log(selectedGarments)
+
 					if ( value.indexOf(name) == -1 ) {
 						let selectedGarmentsCopy = [...selectedGarments];
+						// console.log('removing where i = ', i)
+						// console.log(selectedGarmentsCopy.splice(i, 0))
 						selectedGarmentsCopy.splice(i, 1);
 						modifiedSelectedGarments = selectedGarmentsCopy;
 					}
 				});
 
+				console.log(modifiedSelectedGarments)
+
 				this.setState({
 					selectedGarments: modifiedSelectedGarments,
 				});
-			} else {
+			}
+
+			if (selectedGarments.length <= value.length) {
+				console.log('firing')
 				//if user is adding clothing, add it to the 'selectedGarments' array
 				//so it cannot be selected again
 				this.setState(prevState => ({
@@ -349,9 +371,6 @@ class ApplicationContainer extends Component {
 
 	addProductCondition = () => {
 		const { selectedGender, selectedAssociation, selectedGarments } = this.state;
-
-		console.log('selected garments')
-		console.log(selectedGarments)
 
 		let genderHistory = [];
 		let renderGarmentHistory = [];
@@ -461,8 +480,6 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 										</Grid.Row>
 
-										{console.log(conditionHistory)}
-
 										{ conditionHistory ? conditionHistory.map((row, i) => {
 
 											const selectedGenderHistory = row.selectedGender;
@@ -523,11 +540,6 @@ class ApplicationContainer extends Component {
 									}
 
 
-										{/*{ productConditions.map((row, i) => {*/}
-
-											{/*Association, Gender, Garments*/}
-
-											{/*return (*/}
 												<Grid.Row style={{display: 'flex'}}>
 													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
 														<Dropdown
@@ -576,19 +588,12 @@ class ApplicationContainer extends Component {
 															multiple
 															search
 															selection
-															ref={ this.selectItemBar }
-															options={ genderGarments ? genderGarments.map(garment => ({
-																key: garment.key,
-																value: garment.value,
-																text: garment.text,
-															})) : null }
+															options={ genderGarments }
+															deburr={true}
 															onChange={ this.selectGarments }
 														/>
 													</Grid.Column>
 												</Grid.Row>
-											{/*)*/}
-
-										{/*}) }*/}
 
 
 
