@@ -72,16 +72,10 @@ const clothingArr = [
 		value: 'Shorts',
 		demographic: [ 'Unisex', 'Men', 'Women', 'Girls', 'Boys', 'Aliens' ]
 	},{
-		key: 3,
-		text: 'Dress Shirts',
-		value: 'Dress Shirts',
-		demographic: [ 'Men', 'Women' ]
-	},{
 		key: 4,
 		text: 'Polo Shirts',
 		value: 'Polo Shirts',
 		demographic: [ 'Men', 'Boys' ]
-
 	},{
 		key: 5,
 		text: 'Tee Shirts',
@@ -191,6 +185,7 @@ class ApplicationContainer extends Component {
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender) {
+			console.log('here')
 			let calculate;
 			const conditions = conditionHistory.length;
 
@@ -249,12 +244,8 @@ class ApplicationContainer extends Component {
 
 				this.setState({
 					estimatedSegmentSize: calculate,
-				});
-
-				//reset gender garments regardless of change
-				this.setState({
 					genderGarments: null,
-				})
+				});
 			}
 
 			//if selected garments to not match the previous selected garments, save the new data as selected garments
