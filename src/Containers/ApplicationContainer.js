@@ -4,7 +4,7 @@ import ApplicationHeader from '../Components/ApplicationHeader';
 import Topbar from '../Components/Topbar';
 import Sidebar from '../Components/Sidebar';
 
-import { Grid, Segment, Dropdown, Button, Divider, Header, Icon, Container, Progress, Input } from 'semantic-ui-react';
+import { Grid, Segment, Dropdown, Button, Divider, Header, Icon, Progress } from 'semantic-ui-react';
 import DatePicker from 'react-date-picker'
 
 import './style.css';
@@ -173,12 +173,11 @@ class ApplicationContainer extends Component {
 		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
 		if (conditionHistory.length != prevState.conditionHistory.length) {
-			console.log('selectedGarments, selectGender and selectAssociation reset in didUpdate')
-			// console.log(conditionHistory.length, prevState.conditionHistory.length)
+			console.log('yes')
 			this.setState({
 				selectedGarments: [],
 				selectedAssociation: [],
-				selectedGender: [],
+				selectedGender: null,
 			}, ()=>selectedGarments)
 		}
 
@@ -188,7 +187,7 @@ class ApplicationContainer extends Component {
 			if (selectedGender) {
 				//lets define that genders garments
 				let genderGarments = clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1);
-				// genderGarments.
+
 				this.setState({
 					genderGarments,
 				})
@@ -224,43 +223,43 @@ class ApplicationContainer extends Component {
 						calculate = 100 * .02;
 				}
 			} else {
-				//if product conditions is greater than 1, calculate total from previous state
-				let gender = selectedGender.value;
-				let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
-				switch (gender) {
-					case 'Unisex':
-						calculate = oldEstimatedSegmentSize * .75;
-						break;
+				if (selectedGender) {
+					//if product conditions is greater than 1, calculate total from previous state
+					let gender = selectedGender.value;
+					let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
-					case 'Men':
-						calculate = oldEstimatedSegmentSize * .285;
-						break;
+					switch (gender) {
+						case 'Unisex':
+							calculate = oldEstimatedSegmentSize * .75;
+							break;
 
-					case 'Women':
-						calculate = oldEstimatedSegmentSize * .465;
-						break;
+						case 'Men':
+							calculate = oldEstimatedSegmentSize * .285;
+							break;
 
-					case 'Boys' :
-						calculate = oldEstimatedSegmentSize * .095;
-						break;
+						case 'Women':
+							calculate = oldEstimatedSegmentSize * .465;
+							break;
 
-					case 'Girls' :
-						calculate = oldEstimatedSegmentSize * .155;
-						break;
+						case 'Boys' :
+							calculate = oldEstimatedSegmentSize * .095;
+							break;
 
-					case 'Aliens' :
-						calculate = oldEstimatedSegmentSize * .465;
+						case 'Girls' :
+							calculate = oldEstimatedSegmentSize * .155;
+							break;
+
+						case 'Aliens' :
+							calculate = oldEstimatedSegmentSize * .465;
+					}
+
+					this.setState({
+						estimatedSegmentSize: calculate,
+						genderGarments: null,
+					});
 				}
-
-				this.setState({
-					estimatedSegmentSize: calculate,
-					genderGarments: null,
-				});
 			}
-
-			// console.log('yolo')
-			// console.log(selectedGarments, prevState.selectedGarments)
 
 			//if selected garments to not match the previous selected garments, save the new data as selected garments
 			if (selectedGarments != prevState.selectedGarments) {
@@ -303,21 +302,23 @@ class ApplicationContainer extends Component {
 	};
 
 	selectAssociation = (event, data) => {
-		const { value } = data;
-		const { key } = data.options.find(o => o.value == value);
+		if (this.state.conditionHistory.length == 0) {
+			const {value} = data;
+			const {key} = data.options.find(o => o.value == value);
 
-		this.setState({
-			selectedAssociation: {
-				key,
-				value,
-			}
-		})
+			this.setState({
+				selectedAssociation: {
+					key,
+					value,
+				}
+			})
+		}
 	};
 
 	selectGarments = (event, data) => {
 		const { value } = data;
-		const { genderGarments, selectedGarments } = this.state;
 
+		const { genderGarments, selectedGarments, conditionHistory } = this.state;
 		let key;
 		let incomingEntry = [...value].pop();
 		genderGarments.find(garment => garment.value == incomingEntry ? key = garment.key : null);
@@ -329,18 +330,14 @@ class ApplicationContainer extends Component {
 
 		//if garments are selected
 		if (selectedGarments) {
-
-			// console.log('garment vs  value')
-			// console.log(selectedGarments, value)
-
 			//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
+
+			//amount of garments selected is greater than the values passed by the click
 			if (selectedGarments.length >= value.length) {
 				let modifiedSelectedGarments = [];
 
 				selectedGarments.map((garment, i) => {
 					let name = garment.value;
-
-					console.log(selectedGarments)
 
 					if ( value.indexOf(name) == -1 ) {
 						let selectedGarmentsCopy = [...selectedGarments];
@@ -349,15 +346,12 @@ class ApplicationContainer extends Component {
 					}
 				});
 
-				console.log(modifiedSelectedGarments)
-
 				this.setState({
 					selectedGarments: modifiedSelectedGarments,
 				});
 			}
 
 			if (selectedGarments.length <= value.length) {
-				// console.log('adding')
 				//if user is adding clothing, add it to the 'selectedGarments' array
 				//so it cannot be selected again
 				this.setState(prevState => ({
@@ -456,8 +450,6 @@ class ApplicationContainer extends Component {
 									</Grid.Row>
 								</Grid>
 
-
-
 								{/*Products Purchased*/}
 								<Grid container={true} columns={'equal'} centered>
 									<Segment style={{width: '97%', borderRadius: '1', boxShadow: 'none', border: '1.5px solid lightGrey' }}>
@@ -472,7 +464,7 @@ class ApplicationContainer extends Component {
 													onClick={ ()=>this.deleteProductCondition() }
 													floated={'right'} size={'tiny'}
 													style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '20%'}}
-													disabled={ conditionHistory.length == 1 ? productConditions.length > 1 ? false : true : true }
+													disabled={ conditionHistory.length > 0 ? false : true }
 												>
 												<Icon name={'trash'}></Icon>Delete</Button>
 											</Grid.Column>
@@ -482,7 +474,6 @@ class ApplicationContainer extends Component {
 
 											const selectedGenderHistory = row.selectedGender;
 											const selectedAssociationHistory = row.selectedAssociation;
-											const selectedGarmentsHistory = row.selectedGarments;
 											const renderGarmentHistory = row.renderGarmentHistory;
 
 											return (
@@ -502,7 +493,7 @@ class ApplicationContainer extends Component {
 															size={'tiny'}
 															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
 															disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
-															onClick={ ()=>this.addProductCondition() }
+															onClick={ this.addProductCondition }
 														> +More </Button>
 
 													</Grid.Column>
@@ -526,7 +517,6 @@ class ApplicationContainer extends Component {
 															multiple
 															search
 															selection
-															ref={ this.selectItemBar }
 															onChange={ this.selectGarments }
 														/>
 													</Grid.Column>
@@ -538,21 +528,23 @@ class ApplicationContainer extends Component {
 									}
 
 
+
+
+
+
 												<Grid.Row style={{display: 'flex'}}>
 													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
 														<Dropdown
+															id={'asdf'}
 															className={'dropdown'}
 															placeholder='Select Category'
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-															options={ genderArray.map(gender => ({
-																	key: gender.key,
-																	value: gender.value,
-																	text: gender.text
-																})) }
+															options={ genderArray }
 															onChange={ this.selectGender }
 														/>
+
 														<Button
 															floated={'left'}
 															size={'tiny'}
@@ -564,34 +556,41 @@ class ApplicationContainer extends Component {
 													</Grid.Column>
 													<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
 														<Dropdown
+															id={'asdf-1'}
 															className={'dropdown'}
 															placeholder='Association'
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
 															disabled={ this.state.selectedGender ? false : true }
-															options={ associationArray.map(association => ({
-																key: association.key,
-																value: association.value,
-																text: association.text
-															})) }
+															options={ associationArray }
 															onChange={ this.selectAssociation }
+															cleared
 														/>
 													</Grid.Column>
+													{console.log(genderGarments)}
 													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
 														<Dropdown
+															id={'asdf-2'}
 															placeholder={'Select Item'}
 															style={{ fontSize: '12px', width: '65%'}}
 															disabled={ this.state.genderGarments ? false : true }
 															multiple
-															search
 															selection
 															options={ genderGarments }
-															deburr={true}
 															onChange={ this.selectGarments }
 														/>
 													</Grid.Column>
 												</Grid.Row>
+
+
+
+
+
+
+
+
+
 
 
 
