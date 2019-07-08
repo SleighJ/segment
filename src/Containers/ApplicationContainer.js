@@ -197,8 +197,6 @@ class ApplicationContainer extends Component {
 		}
 	}
 
-	//TODO:find where selectedGarments is getting set to [] to early
-
 	componentDidUpdate = (prevProps, prevState) => {
 		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
 
@@ -262,23 +260,18 @@ class ApplicationContainer extends Component {
 						case 'Unisex':
 							calculate = oldEstimatedSegmentSize * .75;
 							break;
-
 						case 'Men':
 							calculate = oldEstimatedSegmentSize * .285;
 							break;
-
 						case 'Women':
 							calculate = oldEstimatedSegmentSize * .465;
 							break;
-
 						case 'Boys' :
 							calculate = oldEstimatedSegmentSize * .095;
 							break;
-
 						case 'Girls' :
 							calculate = oldEstimatedSegmentSize * .155;
 							break;
-
 						case 'Aliens' :
 							calculate = oldEstimatedSegmentSize * .465;
 					}
@@ -316,7 +309,7 @@ class ApplicationContainer extends Component {
 					});
 				}
 			}
-			}
+		}
 	};
 
 	selectGender = (event, data) => {
@@ -333,17 +326,15 @@ class ApplicationContainer extends Component {
 	};
 
 	selectAssociation = (event, data) => {
-		if (this.state.conditionHistory.length == 0) {
-			const {value} = data;
-			const {key} = data.options.find(o => o.value == value);
+		const {value} = data;
+		const {key} = data.options.find(o => o.value == value);
 
-			this.setState({
-				selectedAssociation: {
-					key,
-					value,
-				}
-			})
-		}
+		this.setState({
+			selectedAssociation: {
+				key,
+				value,
+			}
+		})
 	};
 
 	selectGarments = (event, data) => {
@@ -365,9 +356,8 @@ class ApplicationContainer extends Component {
 
 		//if garments are selected
 		if (selectedGarments) {
-			//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
 
-			//amount of garments selected is greater than the values passed by the click
+			//if user is removing clothing, remove it from 'selectedGarments' array
 			if (selectedGarments.length >= value.length) {
 				let modifiedSelectedGarments = [];
 
@@ -404,6 +394,7 @@ class ApplicationContainer extends Component {
 			renderGarmentHistory.push(garment)
 		});
 
+		//saves history of product conditions
 		let stateSnapShot = {
 			selectedGender,
 			selectedAssociation: selectedAssociation,
@@ -421,7 +412,12 @@ class ApplicationContainer extends Component {
 		const { conditionHistory } = this.state;
 
 		const conditionHistoryCopy = [...conditionHistory];
+		console.log(conditionHistoryCopy)
+		console.log(conditionHistory.pop())
 		conditionHistory.pop();
+
+		//TODO: if a condition is being created, remove it - if it is not being created, remove the last entry.
+
 
 		this.setState(prevState => ({
 			productCondition: conditionHistoryCopy,
@@ -529,7 +525,7 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 										</Grid.Row>
 
-										{ conditionHistory ? conditionHistory.map((row, i) => {
+										{ conditionHistory.map((row, i) => {
 
 											const selectedGenderHistory = row.selectedGender;
 											const selectedAssociationHistory = row.selectedAssociation;
@@ -583,116 +579,61 @@ class ApplicationContainer extends Component {
 												</Grid.Row>
 											)
 
-										}) :
-											<Grid.Row style={{display: 'flex'}}>
-												<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
-													<Dropdown
-														id={'asdf'}
-														className={'dropdown'}
-														placeholder='Select Category'
-														fluid
-														selection
-														style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-														options={ genderArray }
-														value={ selectedGender ? selectedGender.text : null }
-														onChange={ this.selectGender }
-													/>
-
-													<Button
-														floated={'left'}
-														size={'tiny'}
-														style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
-														disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
-														onClick={ ()=>this.addProductCondition() }
-													> +More </Button>
-
-												</Grid.Column>
-												<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
-													<Dropdown
-														id={'asdf-1'}
-														className={'dropdown'}
-														placeholder='Association'
-														fluid
-														selection
-														style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-														disabled={ genderGarments ? false : true }
-														options={ associationArray }
-														onChange={ this.selectAssociation }
-														cleared
-													/>
-												</Grid.Column>
-
-												<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
-													<Dropdown
-														id={'asdf-2'}
-														placeholder={'Select Item'}
-														style={{ fontSize: '12px', width: '65%'}}
-														multiple
-														selection
-														options={ selectedGender ? genderGarments : null }
-														onChange={ this.selectGarments }
-													/>
-												</Grid.Column>
-											</Grid.Row>
+										})
 									}
 
+									<Grid.Row style={{display: 'flex'}}>
+										<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
+											<Dropdown
+												id={'asdf'}
+												className={'dropdown'}
+												placeholder='Select Category'
+												fluid
+												selection
+												style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+												options={ genderArray }
+												value={ selectedGender ? selectedGender.text : null }
+												onChange={ this.selectGender }
+											/>
 
+											<Button
+												floated={'left'}
+												size={'tiny'}
+												style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
+												disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
+												onClick={ ()=>this.addProductCondition() }
+											> +More </Button>
 
+										</Grid.Column>
+										<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
+											<Dropdown
+												id={'asdf-1'}
+												className={'dropdown'}
+												placeholder='Association'
+												fluid
+												selection
+												style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+												disabled={ genderGarments ? false : true }
+												options={ associationArray }
+												onChange={ this.selectAssociation }
+												cleared
+											/>
+										</Grid.Column>
 
-
-
-												<Grid.Row style={{display: 'flex'}}>
-													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
-														<Dropdown
-															id={'asdf'}
-															className={'dropdown'}
-															placeholder='Select Category'
-															fluid
-															selection
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-															options={ genderArray }
-															value={ selectedGender ? selectedGender.text : null }
-															onChange={ this.selectGender }
-														/>
-
-														<Button
-															floated={'left'}
-															size={'tiny'}
-															style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
-															disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
-															onClick={ ()=>this.addProductCondition() }
-														> +More </Button>
-
-													</Grid.Column>
-													<Grid.Column style={{padding: '1%', width: '15%',}} width={5}>
-														<Dropdown
-															id={'asdf-1'}
-															className={'dropdown'}
-															placeholder='Association'
-															fluid
-															selection
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-															disabled={ genderGarments ? false : true }
-															options={ associationArray }
-															onChange={ this.selectAssociation }
-															cleared
-														/>
-													</Grid.Column>
-
-													<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
-														<Dropdown
-															id={'asdf-2'}
-															placeholder={'Select Item'}
-															style={{ fontSize: '12px', width: '65%'}}
-															multiple
-															selection
-															options={ genderGarments }
-															onChange={ this.selectGarments }
-															content={ selectedGarments }
-															value={ selectedGarments }
-														/>
-													</Grid.Column>
-												</Grid.Row>
+										<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={5}>
+											<Dropdown
+												id={'asdf-2'}
+												placeholder={'Select Item'}
+												style={{ fontSize: '12px', width: '65%'}}
+												multiple
+												selection
+												options={ genderGarments }
+												onChange={ this.selectGarments }
+												content={ selectedGarments }
+												value={ selectedGarments }
+											/>
+										</Grid.Column>
+									</Grid.Row>
 
 
 
