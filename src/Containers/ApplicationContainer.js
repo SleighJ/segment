@@ -188,7 +188,6 @@ class ApplicationContainer extends Component {
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender) {
-			console.log('here')
 			let calculate;
 			const conditions = conditionHistory.length;
 
@@ -279,11 +278,8 @@ class ApplicationContainer extends Component {
 	};
 
 	selectGender = (event, data) => {
-		console.log(event, data)
 		const { value } = data;
 		const { key, text } = data.options.find(o => o.value == value);
-		// const id = e.target.id;
-		console.log(value, key)
 
 		this.setState({
 			selectedGender: {
@@ -308,52 +304,54 @@ class ApplicationContainer extends Component {
 
 	selectGarments = (event, data) => {
 		const { value } = data;
+		// const { key } = data.options.find(o => o.value == value);
 		const { genderGarments, selectedGarments } = this.state;
 
-		let incomingEntry = [...value].pop();
 		let key;
 
+		let incomingEntry = [...value].pop();
+
 		genderGarments.find(garment => garment.value == incomingEntry ? key = garment.key : null);
+
 
 		let garmentObject = {
 			value: incomingEntry,
 			key: key,
 		};
 
-		//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
-		if (selectedGarments.length > value.length) {
-			let modifiedSelectedGarments;
+		if (selectedGarments) {
+			//if user is removing clothing, remove it from array and correspond estimated segment size to reflect that change
+			if (selectedGarments.length > value.length) {
+				let modifiedSelectedGarments;
 
-			selectedGarments.map((garment, i) => {
-				let name = garment.value;
+				selectedGarments.map((garment, i) => {
+					let name = garment.value;
 
-				if ( value.indexOf(name) == -1 ) {
-					let selectedGarmentsCopy = [...selectedGarments];
-					selectedGarmentsCopy.splice(i, 1);
-					modifiedSelectedGarments = selectedGarmentsCopy;
-				}
-			});
+					if ( value.indexOf(name) == -1 ) {
+						let selectedGarmentsCopy = [...selectedGarments];
+						selectedGarmentsCopy.splice(i, 1);
+						modifiedSelectedGarments = selectedGarmentsCopy;
+					}
+				});
 
-			this.setState({
-				selectedGarments: modifiedSelectedGarments,
-			});
-		} else {
-			//if user is adding clothing, add it to the 'selectedGarments' array
-			//so it cannot be selected again
-			this.setState(prevState => ({
-				selectedGarments: [...prevState.selectedGarments, garmentObject]
-			}));
+				this.setState({
+					selectedGarments: modifiedSelectedGarments,
+				});
+			} else {
+				//if user is adding clothing, add it to the 'selectedGarments' array
+				//so it cannot be selected again
+				this.setState(prevState => ({
+					selectedGarments: [...prevState.selectedGarments, garmentObject]
+				}));
+			}
 		}
 	};
 
 	addProductCondition = () => {
 		const { selectedGender, selectedAssociation, selectedGarments } = this.state;
 
-		let stateSnapShot = {
-			selectedGender,
-			selectedAssociation: selectedAssociation,
-			selectedGarments: [selectedGarments],
-		};
+		console.log('selected garments')
+		console.log(selectedGarments)
 
 		let genderHistory = [];
 		let renderGarmentHistory = [];
@@ -365,10 +363,17 @@ class ApplicationContainer extends Component {
 			renderGarmentHistory.push(garment.value)
 		});
 
+		let stateSnapShot = {
+			selectedGender,
+			selectedAssociation: selectedAssociation,
+			selectedGarments: [selectedGarments],
+			renderGarmentHistory,
+		};
+
 		this.setState(prevState => ({
 			productConditions: [...prevState.productConditions, '*'],
 			conditionHistory: [...prevState.conditionHistory, stateSnapShot],
-			renderGarmentHistory,
+			selectedGarments: [],
 			genderHistory,
 		}))
 	};
@@ -387,13 +392,6 @@ class ApplicationContainer extends Component {
 		}))
 	};
 
-	openDatePicker = () => {
-		console.log('called')
-		this.setState({
-			openDatePicker: !this.state.openDatePicker,
-		})
-	};
-
 	handleDateChange = (date) => {
 		this.setState({
 			startDate: date
@@ -401,9 +399,8 @@ class ApplicationContainer extends Component {
 	};
 
 	render() {
-		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory, renderGarmentHistory } = this.state;
+		const { estimatedSegmentSize, genderGarments, productConditions, selectedGarments, selectedAssociation, selectedGender, conditionHistory } = this.state;
 
-		console.log(conditionHistory)
 		return(
 			<div>
 
@@ -464,16 +461,15 @@ class ApplicationContainer extends Component {
 											</Grid.Column>
 										</Grid.Row>
 
-										{ conditionHistory ? conditionHistory.map((row, i) => {
+										{console.log(conditionHistory)}
 
+										{ conditionHistory ? conditionHistory.map((row, i) => {
 
 											const selectedGenderHistory = row.selectedGender;
 											const selectedAssociationHistory = row.selectedAssociation;
 											const selectedGarmentsHistory = row.selectedGarments;
+											const renderGarmentHistory = row.renderGarmentHistory;
 
-												// { selectedGenderHistory.map((jj, i) => {
-												// 	console.log(jj, i)
-												// }) }
 											return (
 												<Grid.Row key={i} style={{display: 'flex'}}>
 													<Grid.Column style={{padding: '1%', width: '20%'}} width={5}>
@@ -484,11 +480,6 @@ class ApplicationContainer extends Component {
 															fluid
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
-															// options={ selectedGenderHistory.map(gender => ({
-															// 	key: gender.key,
-															// 	value: gender.value,
-															// 	text: gender.text
-															// })) }
 															onChange={ this.selectGender }
 														/>
 														<Button
@@ -508,11 +499,6 @@ class ApplicationContainer extends Component {
 															selection
 															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
 															disabled={ this.state.selectedGender ? false : true }
-															// options={ selectedAssociationHistory.map(association => ({
-															// 	key: association.key,
-															// 	value: association.value,
-															// 	text: association.text
-															// })) }
 															onChange={ this.selectAssociation }
 														/>
 													</Grid.Column>
@@ -526,11 +512,6 @@ class ApplicationContainer extends Component {
 															search
 															selection
 															ref={ this.selectItemBar }
-															// options={ selectedGarmentsHistory.map(garment => ({
-															// 	key: garment.key,
-															// 	value: garment.value,
-															// 	text: garment.text,
-															// })) }
 															onChange={ this.selectGarments }
 														/>
 													</Grid.Column>
