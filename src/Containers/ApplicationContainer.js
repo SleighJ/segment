@@ -229,23 +229,29 @@ const deviceModifiers = [
 		key: 1,
 		text: 'Uses',
 		value: 'Uses',
-	},{
-		key: 2,
-		text: 'Does Not Use',
-		value: 'Does Not Use',
 	}
 ];
 
 const userConditions = [
 	{
 		key: 1,
-		text: 'high frequency user'
+		value: 'All Users',
+		text: 'All Users'
+
 	},{
 		key: 2,
-		text: 'low frequency user'
-	},{
+		value: 'High frequency users',
+		text: 'High frequency users'
+
+	}, {
 		key: 3,
-		text: 'not user',
+		value: 'Low frequency users',
+		text: 'Low frequency users',
+
+	},{
+		key: 4,
+		value: 'Non-users',
+		text: 'Non-users',
 	}
 ];
 
@@ -255,22 +261,30 @@ class ApplicationContainer extends React.Component {
 
 		this.state = {
 			estimatedSegmentSize: 100,
+			genderGarments: null,
+			deviceOsOptions: null,
+
 			selectedGender: null,
 			selectedAssociation: null,
-			genderGarments: null,
 			selectedGarments: [],
 			conditionHistory: [],
+
 			openCalendar: false,
 			startDate: new Date(),
-			setDate: null,
+			productInteraction: null,
+			timeModifier: null,
+			selectedDate: null,
+			formattedDate: null,
+
 			selectedDevice: null,
 			selectOperatingSystem: [],
-			deviceOsOptions: null,
+			selectedUserFrequency: null,
+			frequencyAdded: null,
 		}
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate } = this.state;
 
 		//conditional rendering & functionality for additional product conditions
 		if (conditionHistory.length != prevState.conditionHistory.length) {
@@ -303,6 +317,7 @@ class ApplicationContainer extends React.Component {
 
 			//if there is only 1 line of product conditions
 			if (conditions == 0) {
+
 				let gender = selectedGender.value;
 
 				switch (gender) {
@@ -324,6 +339,10 @@ class ApplicationContainer extends React.Component {
 					case 'Aliens' :
 						calculate = 100 * .02;
 				}
+
+				this.setState({
+					estimatedSegmentSize: calculate,
+				});
 			} else {
 
 				if (selectedGender) {
@@ -353,7 +372,6 @@ class ApplicationContainer extends React.Component {
 
 					this.setState({
 						estimatedSegmentSize: calculate,
-						genderGarments: null,
 					});
 				}
 			}
@@ -362,6 +380,7 @@ class ApplicationContainer extends React.Component {
 				//if selected garments to not match the previous selected garments, save the new data as selected garments
 				if (selectedGarments != prevState.selectedGarments) {
 					let addingGarments;
+					// let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 					let newEstimatedSegmentSize;
 
 					if (selectedGarments.length > prevState.selectedGarments.length) {
@@ -385,27 +404,79 @@ class ApplicationContainer extends React.Component {
 				}
 			}
 		}
+				//<--------Time------->
+	if (productInteraction != prevState.productInteraction) {
+		let calculate;
+		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
-				//<--------for time------->
+		if (productInteraction) {
+			switch (productInteraction) {
+				case 'Purchased':
+					calculate = oldEstimatedSegmentSize * .65;
+					break;
+				case 'Searched':
+					calculate = oldEstimatedSegmentSize * .95;
+			}
+		}
+		this.setState({
+			estimatedSegmentSize: calculate,
+		});
+	}
 
+	if (timeModifier && timeModifier != prevState.timeModifier) {
+		let calculate;
+		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
+		switch (timeModifier) {
+			case 'On':
+				console.log('on')
+				calculate = oldEstimatedSegmentSize * .5;
+				break;
+			case 'Around':
+				console.log('around')
+				calculate = oldEstimatedSegmentSize * .95;
+				break;
+			case 'Before':
+				console.log('before')
+				calculate = oldEstimatedSegmentSize * .99;
+				break;
+		}
+		this.setState({
+			estimatedSegmentSize: calculate,
+		});
+	}
+
+	if (selectedDate && selectedDate != prevState.selectedDate) {
+		let calculate;
+		const month = selectedDate.getMonth();
+		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
+
+		switch (month) {
+			case 10 || 11 || 12:
+				calculate = oldEstimatedSegmentSize * .9;
+				break;
+			case 1||2||3||4||5:
+				calculate = oldEstimatedSegmentSize * .899;
+				break;
+			case 6||7||8||9:
+				calculate = oldEstimatedSegmentSize * .99;
+				break;
+		}
+		this.setState({
+			estimatedSegmentSize: calculate,
+		});
+	}
 
 				//<--------for technology------->
-
+	//match operating systems with selected devices
 	if (selectedDevice && selectedDevice != prevState.selectedDevice) {
-		console.log('yolo')
-		console.log(selectedDevice)
 		const deviceOsOptions = operatingSystems.filter(os => os.devices.indexOf(selectedDevice) != -1);
-		console.log(deviceOsOptions)
 		this.setState({
 			deviceOsOptions,
 		})
-
-		// let genderGarments = clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1);
-
 	}
-
 				//<--------for new conditions------->
+
 
 	};
 
@@ -508,32 +579,21 @@ class ApplicationContainer extends React.Component {
 		}))
 	};
 
-	selectSearchOrPurchase = (event, data) => {
+	selectProductInteraction = (event, data) => {
 		const {value} = data;
 		const {key} = data.options.find(o => o.value == value);
-		const timeInteraction = value;
 
 		this.setState({
-			timeInteraction,
-			searchOrPurchase: {
-				key,
-				value,
-			}
+			productInteraction: value,
 		});
 	};
 
 	selectOnAroundBefore = (event, data) => {
 		const {value} = data;
-		const {key} = data.options.find(o => o.value == value);
-
 		const timeModifier = value;
 
 		this.setState({
 			timeModifier,
-			onAroundBefore: {
-				key,
-				value,
-			}
 		});
 	};
 
@@ -554,11 +614,20 @@ class ApplicationContainer extends React.Component {
 
 		if (date < startDate) {
 			this.setState({
-				setDate: date,
+				selectedDate: date,
 				formattedDate: formattedDate,
 				openCalendar: !this.state.openCalendar,
 			});
 		}
+	};
+
+	removeTimePeriod = () => {
+		this.setState({
+			productInteraction: null,
+			selectedDate: null,
+			formattedDate: null,
+			openCalendar: null,
+		})
 	};
 
 	selectDevice = (event, data) => {
@@ -586,10 +655,38 @@ class ApplicationContainer extends React.Component {
 		})
 	};
 
-	render() {
-		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions } = this.state;
+	removeTechnology = () => {
+		console.log('asf')
+		this.setState({
+			selectedDevice: null,
+			selectedDeviceObj: null,
+			selectedOperatingSystem: null,
+		})
+	};
 
-		console.log(this.state)
+	selectFrequency = (event, data) => {
+		const { value } = data;
+		const { key } = data.options.find(o => o.value == value);
+
+		this.setState({
+			selectedUserFrequency: {
+				key,
+				value
+			}
+		})
+	};
+
+	addFrequencyCondition = (event, data) => {
+		const { value } = data;
+
+		this.setState({
+			frequencyAdded: value,
+		})
+	};
+
+	render() {
+		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions, startDate, productInteraction, timeModifier } = this.state;
+
 		return(
 			<div>
 
@@ -634,7 +731,7 @@ class ApplicationContainer extends React.Component {
 
 										<Grid.Row style={{display: 'flex'}}>
 											<Grid.Column width={12} style={{width: '100%'}}>
-												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%'}}>Products purchased <span style={{color: 'lightGrey'}}> - What products have they interacted with? </span> </Header>
+												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%'}}>Product interactions <span style={{color: 'lightGrey'}}> - What products have they interacted with? </span> </Header>
 											</Grid.Column>
 										</Grid.Row>
 
@@ -706,7 +803,7 @@ class ApplicationContainer extends React.Component {
 											<Dropdown
 												id={'asdf'}
 												className={'dropdown'}
-												placeholder='Select Category'
+												placeholder='Market'
 												fluid
 												selection
 												style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
@@ -762,47 +859,51 @@ class ApplicationContainer extends React.Component {
 									<Grid.Row>
 										<Grid.Row style={{display: 'flex'}}>
 											<Grid.Column style={{width: '120%'}}>
-												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%',}}>Time of purchase <span style={{color: 'lightGrey'}}> - When did this purchase take place? </span> </Header>
+												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)', margin: '2%', marginBottom: '5%',}}>Time of interaction <span style={{color: 'lightGrey'}}> - When did this purchase take place? </span> </Header>
 											</Grid.Column>
 
 											<Grid.Column style={{width: '80%'}}>
-												<Button floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey'}}> <Icon name={'time'}> </Icon>Remove this time period</Button>
+												<Button onClick={ this.removeTimePeriod } floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey'}}> <Icon name={'time'}> </Icon>Remove this time period</Button>
 											</Grid.Column>
 										</Grid.Row>
 
 										<Grid.Row style={{display: 'flex'}}>
 											<Grid.Column style={{padding: '1%', width: '20%'}} width={3}>
 												<Dropdown
-													className={'dropdown'}
 													placeholder='Interaction'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
 													options={ searchedAndPurchased }
-													onChange={ this.selectSearchOrPurchase }
+													onChange={ this.selectProductInteraction }
+													text={ productInteraction ? productInteraction : 'Interaction' }
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '15%'}} width={3}>
 												<Dropdown
-													className={'dropdown'}
 													placeholder='On'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
 													options={ onAroundAndBefore }
 													onChange={ this.selectOnAroundBefore }
+													text={ timeModifier ? timeModifier : 'On' }
 												/>
 											</Grid.Column>
 
 											<Grid.Column style={{padding: '1%', width: '65%'}} width={3} align={'left'}>
-												{ this.state.openCalendar ?
+												{
+													this.state.openCalendar ?
 													<Calendar
-														value={ this.state.startDate }
+														value={ startDate }
 														onChange={ this.handleDateChange }
-														maxDate={ this.state.startDate }
+														maxDate={ startDate }
 													/>
-													: <Button content={ formattedDate ? formattedDate : 'Select Date'} onClick={ this.openCalendar }/> }
-
+												:
+													<Button
+														content={ formattedDate ? formattedDate : 'Select Date'}
+														onClick={ this.openCalendar }/>
+												}
 											</Grid.Column>
 										</Grid.Row>
 									</Grid.Row>
@@ -824,7 +925,7 @@ class ApplicationContainer extends React.Component {
 											</Grid.Column>
 
 											<Grid.Column style={{width: '80%'}}>
-												<Button floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey'}}> <Icon name={'trash'}> </Icon> Delete </Button>
+												<Button onClick={ this.removeTechnology } floated={'right'} size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey'}}> <Icon name={'trash'}> </Icon> Delete </Button>
 											</Grid.Column>
 										</Grid.Row>
 
@@ -842,12 +943,12 @@ class ApplicationContainer extends React.Component {
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '15%'}} width={5}>
 												<Dropdown
-													className={'dropdown'}
 													placeholder='Uses'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
 													options={deviceModifiers}
+													value={ 'Uses' }
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '65%', color: 'lightGrey'}} width={6} align={'left'}>
@@ -880,22 +981,27 @@ class ApplicationContainer extends React.Component {
 										<Grid.Row style={{display: 'flex', alignItems: 'center', color: 'rgb(68, 68, 68)', margin: '2%'}}>
 
 											<Grid.Column width={4}>
-												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)'}}>New Condition</Header>
+												<Header as={'h4'} align={'left'} style={{fontFamily: 'IBM Plex Sans', fontSize: '1.25rem', color: 'rgb(88, 88, 88)'}}>Frequency</Header>
 											</Grid.Column>
 
 											<Grid.Column width={3} style={{paddingLeft: '8.5%', width: '40%'}}>
 												<Dropdown
 													className={'dropdown'}
-													placeholder='Purchase history'
+													placeholder='User Frequency'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-													options={userConditions}
+													options={ userConditions }
+													onChange={ this.selectFrequency }
 												/>
 											</Grid.Column>
 
 											<Grid.Column width={9} floated={'right'}>
-												<Button size={'tiny'} style={{fontFamily: 'IBM Plex Sans', border: '1px solid lightGrey', backgroundColor: 'rgb(38, 165, 132)', color: 'white'}}>+Add</Button>
+												<Button
+													size={'tiny'}
+													style={{fontFamily: 'IBM Plex Sans', border: '1px solid lightGrey', backgroundColor: 'rgb(38, 165, 132)', color: 'white'}}
+													onClick={ this.addFrequencyCondition }
+												>+Add</Button>
 											</Grid.Column>
 
 										</Grid.Row>
