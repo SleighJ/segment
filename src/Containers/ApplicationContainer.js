@@ -438,18 +438,28 @@ class ApplicationContainer extends React.Component {
 	}
 
 	if (timeModifier && timeModifier != prevState.timeModifier) {
+
 		let calculate;
+		let coefficient = 0;
+		let timeModifierCopy;
 		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
-		switch (timeModifier) {
+		if (!timeModifier) {
+			coefficient = 1;
+			timeModifierCopy = prevState.timeModifierCopy;
+		} else {
+			timeModifierCopy = timeModifier
+		}
+
+		switch (timeModifierCopy) {
 			case 'On':
-				calculate = oldEstimatedSegmentSize * .5;
+				calculate = oldEstimatedSegmentSize * (.5 + coefficient);
 				break;
 			case 'Around':
-				calculate = oldEstimatedSegmentSize * .95;
+				calculate = oldEstimatedSegmentSize * (.95 + coefficient);
 				break;
 			case 'Before':
-				calculate = oldEstimatedSegmentSize * .99;
+				calculate = oldEstimatedSegmentSize * (.99 + coefficient);
 				break;
 		}
 		this.setState({
@@ -458,19 +468,30 @@ class ApplicationContainer extends React.Component {
 	}
 
 	if (selectedDate && selectedDate != prevState.selectedDate) {
+
 		let calculate;
-		const month = selectedDate.getMonth();
+		let coefficient = 0;
+		let selectedDateCopy;
 		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
+
+		if (!selectedDate) {
+			coefficient = 1;
+			selectedDateCopy = prevState.selectedDate;
+		} else {
+			selectedDateCopy = selectedDate;
+		}
+
+		let month = selectedDateCopy.getMonth();
 
 		switch (month) {
 			case 10 || 11 || 12:
-				calculate = oldEstimatedSegmentSize * .9;
+				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
 				break;
 			case 1||2||3||4||5:
-				calculate = oldEstimatedSegmentSize * .899;
+				calculate = oldEstimatedSegmentSize * (.899 + coefficient);
 				break;
 			case 6||7||8||9:
-				calculate = oldEstimatedSegmentSize * .99;
+				calculate = oldEstimatedSegmentSize * (.99 + coefficient);
 				break;
 		}
 		this.setState({
