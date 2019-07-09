@@ -429,15 +429,12 @@ class ApplicationContainer extends React.Component {
 
 		switch (timeModifier) {
 			case 'On':
-				console.log('on')
 				calculate = oldEstimatedSegmentSize * .5;
 				break;
 			case 'Around':
-				console.log('around')
 				calculate = oldEstimatedSegmentSize * .95;
 				break;
 			case 'Before':
-				console.log('before')
 				calculate = oldEstimatedSegmentSize * .99;
 				break;
 		}
@@ -656,7 +653,6 @@ class ApplicationContainer extends React.Component {
 	};
 
 	removeTechnology = () => {
-		console.log('asf')
 		this.setState({
 			selectedDevice: null,
 			selectedDeviceObj: null,
@@ -685,7 +681,7 @@ class ApplicationContainer extends React.Component {
 	};
 
 	render() {
-		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions, startDate, productInteraction, timeModifier } = this.state;
+		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions, startDate, productInteraction, timeModifier, selectedDevice, selectedOperatingSystem } = this.state;
 
 		return(
 			<div>
@@ -910,11 +906,6 @@ class ApplicationContainer extends React.Component {
 									</Segment>
 								</Grid>
 
-
-
-
-
-
 								{/*Technology*/}
 								<Grid container={true} centered>
 									<Segment style={{width: '97%', marginTop: '1%', borderRadius: '1', boxShadow: 'none', fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey'}}>
@@ -939,6 +930,8 @@ class ApplicationContainer extends React.Component {
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
 													options={devices}
 													onChange={ this.selectDevice }
+													text={ selectedDevice ? selectedDevice : 'Device' }
+
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '15%'}} width={5}>
@@ -957,6 +950,7 @@ class ApplicationContainer extends React.Component {
 													placeholder='Operating System'
 													fluid
 													selection
+													text={ selectedOperatingSystem ? selectedOperatingSystem.value : 'Operating System' }
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
 													options={ deviceOsOptions ? deviceOsOptions : null }
 													onChange={ this.selectOperatingSystem }
