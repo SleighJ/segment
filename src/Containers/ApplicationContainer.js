@@ -276,6 +276,7 @@ class ApplicationContainer extends React.Component {
 			selectedDate: null,
 			formattedDate: null,
 
+			timeHistory: [],
 			selectedDevice: null,
 			selectOperatingSystem: [],
 			selectedUserFrequency: null,
@@ -295,7 +296,7 @@ class ApplicationContainer extends React.Component {
 			})
 		}
 
-		//<--------for products------->
+		//<--------Products------->
 
 		//loads garments dependent on gender
 		if (!this.state.genderGarments) {
@@ -404,18 +405,31 @@ class ApplicationContainer extends React.Component {
 				}
 			}
 		}
-				//<--------Time------->
+
+	//<--------Time------->
+
 	if (productInteraction != prevState.productInteraction) {
+
 		let calculate;
+		let coefficient = 0;
+		let productInteractionCopy;
 		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
-		if (productInteraction) {
-			switch (productInteraction) {
+		//if no productInteraction, its been removed, switch the coefficient, and make the copy
+		if (!productInteraction) {
+			coefficient = 1;
+			productInteractionCopy = prevState.productInteraction;
+		} else {
+			productInteractionCopy = productInteraction;
+		}
+
+		if (productInteractionCopy) {
+			switch (productInteractionCopy) {
 				case 'Purchased':
-					calculate = oldEstimatedSegmentSize * .65;
+					calculate = oldEstimatedSegmentSize * (.65 + coefficient);
 					break;
 				case 'Searched':
-					calculate = oldEstimatedSegmentSize * .95;
+					calculate = oldEstimatedSegmentSize * (.95 + coefficient);
 			}
 		}
 		this.setState({
@@ -464,7 +478,8 @@ class ApplicationContainer extends React.Component {
 		});
 	}
 
-				//<--------for technology------->
+	//<--------Technology------->
+
 	//match operating systems with selected devices
 	if (selectedDevice && selectedDevice != prevState.selectedDevice) {
 		const deviceOsOptions = operatingSystems.filter(os => os.devices.indexOf(selectedDevice) != -1);
@@ -472,11 +487,26 @@ class ApplicationContainer extends React.Component {
 			deviceOsOptions,
 		})
 	}
-				//<--------for new conditions------->
+
+	//<--------for new conditions------->
 
 
-	};
+	}; //compWillMount
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+	// <---------Products------------>
 	selectGender = (event, data) => {
 		const { value } = data;
 		const { key, text } = data.options.find(o => o.value == value);
@@ -576,6 +606,8 @@ class ApplicationContainer extends React.Component {
 		}))
 	};
 
+
+	// <-----------Time------------>
 	selectProductInteraction = (event, data) => {
 		const {value} = data;
 		const {key} = data.options.find(o => o.value == value);
@@ -601,7 +633,7 @@ class ApplicationContainer extends React.Component {
 	};
 
 	handleDateChange = (date) => {
-		const { startDate } = this.state;
+		const { startDate, timeModifier, productInteraction, timeHistory } = this.state;
 
 		const year = date.getFullYear();
 		const month = date.getMonth();
@@ -609,11 +641,17 @@ class ApplicationContainer extends React.Component {
 
 		const formattedDate = `${year}-${month}-${day}`;
 
+		const timeHistoryObj = {
+			timeModifier,
+			productInteraction,
+		};
+
 		if (date < startDate) {
 			this.setState({
 				selectedDate: date,
 				formattedDate: formattedDate,
 				openCalendar: !this.state.openCalendar,
+				timeHistory: [...timeHistory, timeHistoryObj],
 			});
 		}
 	};
@@ -623,13 +661,18 @@ class ApplicationContainer extends React.Component {
 			productInteraction: null,
 			selectedDate: null,
 			formattedDate: null,
-			openCalendar: null,
 		})
 	};
 
+	// <---------Technology------------>
 	selectDevice = (event, data) => {
 		const {value} = data;
 		const {key} = data.options.find(o => o.value == value);
+
+		// const technologyHistoryObj = {
+		// 	key,
+		// 	value,
+		// };
 
 		this.setState({
 			selectedDevice: value,
@@ -672,6 +715,8 @@ class ApplicationContainer extends React.Component {
 		})
 	};
 
+
+	// <---------Frequency------------>
 	addFrequencyCondition = (event, data) => {
 		const { value } = data;
 
