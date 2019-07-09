@@ -341,9 +341,15 @@ class ApplicationContainer extends React.Component {
 		const { value } = data;
 		const { genderGarments, selectedGarments, conditionHistory } = this.state;
 
+		//for addition
 		let key;
 		let incomingEntry = [...value].pop();
 		genderGarments.find(garment => garment.value == incomingEntry ? key = garment.key : null);
+
+		//for removal
+		const contentArray = data.content;
+		const selectedText = event.currentTarget.parentNode.innerText;
+		const id = selectedGarments.indexOf(selectedText);
 
 		//if garments are selected
 		if (selectedGarments) {
@@ -352,15 +358,9 @@ class ApplicationContainer extends React.Component {
 			if (selectedGarments.length >= value.length) {
 				let modifiedSelectedGarments = [];
 
-				selectedGarments.map((garment, i) => {
-					let name = garment.value;
-
-					if ( value.indexOf(name) == -1 ) {
-						let selectedGarmentsCopy = [...selectedGarments];
-						selectedGarmentsCopy.splice(i, 1);
-						modifiedSelectedGarments = selectedGarmentsCopy;
-					}
-				});
+				let selectedGarmentsCopy = [...selectedGarments];
+				selectedGarmentsCopy.splice(id, 1);
+				modifiedSelectedGarments = selectedGarmentsCopy;
 
 				this.setState({
 					selectedGarments: modifiedSelectedGarments,
@@ -455,6 +455,7 @@ class ApplicationContainer extends React.Component {
 	render() {
 		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, setDate } = this.state;
 
+		console.log(conditionHistory)
 		return(
 			<div>
 
@@ -584,7 +585,7 @@ class ApplicationContainer extends React.Component {
 												floated={'left'}
 												size={'tiny'}
 												style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', marginTop: '10%', fontSize: '12px', width: '60%'}}
-												disabled={ selectedGarments && selectedAssociation && selectedGender ? false : true }
+												disabled={ selectedGender && selectedAssociation && selectedGarments.length > 0 ? false : true }
 												onClick={ ()=>this.addProductCondition() }
 											> +More </Button>
 
@@ -612,7 +613,11 @@ class ApplicationContainer extends React.Component {
 												selection
 												options={ genderGarments }
 												onChange={ this.selectGarments }
-												content={ selectedGarments }
+												content={ selectedGarments.map(garment => ({
+													key: 'asdf',
+													text: garment,
+													value: garment,
+												})) }
 												value={ selectedGarments }
 											/>
 										</Grid.Column>
