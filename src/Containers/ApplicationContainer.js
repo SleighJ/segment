@@ -200,22 +200,27 @@ const operatingSystems = [
 		key: 1,
 		text: 'MacOS',
 		value: 'MacOS',
+		devices: [ 'Web' ]
 	},{
 		key: 2,
 		text: 'iOS',
 		value: 'iOS',
+		devices: [ 'Mobile' ]
 	},{
 		key: 3,
-		text: 'Windows OS',
+		text: 'Windows',
 		value: 'Windows OS',
+		devices: [ 'Web' ]
 	},{
 		key: 4,
 		text: 'Android',
 		value: 'Android',
+		devices: ['Mobile'],
 	},{
 		key: 5,
 		text: 'Other',
 		value: 'Other',
+		devices: [ 'Web', 'Mobile' ],
 	}
 ];
 
@@ -228,7 +233,20 @@ const deviceModifiers = [
 		key: 2,
 		text: 'Does Not Use',
 		value: 'Does Not Use',
-	},
+	}
+];
+
+const userConditions = [
+	{
+		key: 1,
+		text: 'high frequency user'
+	},{
+		key: 2,
+		text: 'low frequency user'
+	},{
+		key: 3,
+		text: 'not user',
+	}
 ];
 
 class ApplicationContainer extends React.Component {
@@ -245,12 +263,16 @@ class ApplicationContainer extends React.Component {
 			openCalendar: false,
 			startDate: new Date(),
 			setDate: null,
+			selectedDevice: null,
+			selectOperatingSystem: [],
+			deviceOsOptions: null,
 		}
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice } = this.state;
 
+		//conditional rendering & functionality for additional product conditions
 		if (conditionHistory.length != prevState.conditionHistory.length) {
 			this.setState({
 				selectedGarments: [],
@@ -259,7 +281,9 @@ class ApplicationContainer extends React.Component {
 			})
 		}
 
-		//if no garments of that gender have been selected
+		//<--------for products------->
+
+		//loads garments dependent on gender
 		if (!this.state.genderGarments) {
 			//but a gender has been selected
 			if (selectedGender) {
@@ -361,6 +385,28 @@ class ApplicationContainer extends React.Component {
 				}
 			}
 		}
+
+				//<--------for time------->
+
+
+
+				//<--------for technology------->
+
+	if (selectedDevice && selectedDevice != prevState.selectedDevice) {
+		console.log('yolo')
+		console.log(selectedDevice)
+		const deviceOsOptions = operatingSystems.filter(os => os.devices.indexOf(selectedDevice) != -1);
+		console.log(deviceOsOptions)
+		this.setState({
+			deviceOsOptions,
+		})
+
+		// let genderGarments = clothingArr.filter(garment => garment.demographic.indexOf(selectedGender.value) != -1);
+
+	}
+
+				//<--------for new conditions------->
+
 	};
 
 	selectGender = (event, data) => {
@@ -528,8 +574,20 @@ class ApplicationContainer extends React.Component {
 		})
 	};
 
+	selectOperatingSystem = (event, data) => {
+		const { value } = data;
+		const { key } = data.options.find(o => o.value == value);
+
+		this.setState({
+			selectedOperatingSystem: {
+				key,
+				value,
+			}
+		})
+	};
+
 	render() {
-		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate } = this.state;
+		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions } = this.state;
 
 		console.log(this.state)
 		return(
@@ -751,6 +809,11 @@ class ApplicationContainer extends React.Component {
 									</Segment>
 								</Grid>
 
+
+
+
+
+
 								{/*Technology*/}
 								<Grid container={true} centered>
 									<Segment style={{width: '97%', marginTop: '1%', borderRadius: '1', boxShadow: 'none', fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey'}}>
@@ -794,13 +857,21 @@ class ApplicationContainer extends React.Component {
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-													options={operatingSystems}
+													options={ deviceOsOptions ? deviceOsOptions : null }
+													onChange={ this.selectOperatingSystem }
 												/>
 											</Grid.Column>
 										</Grid.Row>
 
 									</Segment>
 								</Grid>
+
+
+
+
+
+
+
 
 								{/*New Condition*/}
 								<Grid columns={'equal'} container={true} centered>
@@ -819,7 +890,7 @@ class ApplicationContainer extends React.Component {
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-													// options={friendOptions}
+													options={userConditions}
 												/>
 											</Grid.Column>
 
