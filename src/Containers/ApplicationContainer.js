@@ -5,9 +5,9 @@ import Topbar from '../Components/Topbar';
 import Sidebar from '../Components/Sidebar';
 
 import { Grid, Segment, Dropdown, Button, Divider, Header, Icon, Progress } from 'semantic-ui-react';
+import Calendar from 'react-calendar'
 import moment from 'react-moment';
 import 'moment-timezone';
-import Calendar from 'react-calendar'
 
 import './style.css';
 
@@ -414,8 +414,10 @@ class ApplicationContainer extends React.Component {
 	selectSearchOrPurchase = (event, data) => {
 		const {value} = data;
 		const {key} = data.options.find(o => o.value == value);
+		const timeInteraction = value;
 
 		this.setState({
+			timeInteraction,
 			searchOrPurchase: {
 				key,
 				value,
@@ -427,7 +429,10 @@ class ApplicationContainer extends React.Component {
 		const {value} = data;
 		const {key} = data.options.find(o => o.value == value);
 
+		const timeModifier = value;
+
 		this.setState({
+			timeModifier,
 			onAroundBefore: {
 				key,
 				value,
@@ -444,18 +449,25 @@ class ApplicationContainer extends React.Component {
 	handleDateChange = (date) => {
 		const { startDate } = this.state;
 
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const day = date.getDate();
+
+		const formattedDate = `${year}-${month}-${day}`;
+
 		if (date < startDate) {
 			this.setState({
 				setDate: date,
+				formattedDate: formattedDate,
 				openCalendar: !this.state.openCalendar,
 			});
 		}
 	};
 
 	render() {
-		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, setDate } = this.state;
+		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate } = this.state;
 
-		console.log(conditionHistory)
+		console.log(this.state)
 		return(
 			<div>
 
@@ -640,7 +652,7 @@ class ApplicationContainer extends React.Component {
 											<Grid.Column style={{padding: '1%', width: '20%'}} width={3}>
 												<Dropdown
 													className={'dropdown'}
-													placeholder='Select Interaction'
+													placeholder='Interaction'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
@@ -660,8 +672,6 @@ class ApplicationContainer extends React.Component {
 												/>
 											</Grid.Column>
 
-											{/*{console.log(JSON.stringify(setDate))}*/}
-
 											<Grid.Column style={{padding: '1%', width: '65%'}} width={3} align={'left'}>
 												{ this.state.openCalendar ?
 													<Calendar
@@ -669,7 +679,7 @@ class ApplicationContainer extends React.Component {
 														onChange={ this.handleDateChange }
 														maxDate={ this.state.startDate }
 													/>
-													: <Button content={'Select Date'} onClick={ this.openCalendar }/> }
+													: <Button content={ formattedDate ? formattedDate : 'Select Date'} onClick={ this.openCalendar }/> }
 
 											</Grid.Column>
 											<Grid.Column align={'left'} style={{width: '100%'}} width={7}>
