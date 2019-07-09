@@ -279,13 +279,14 @@ class ApplicationContainer extends React.Component {
 			timeHistory: [],
 			selectedDevice: null,
 			selectOperatingSystem: [],
+
 			selectedUserFrequency: null,
 			frequencyAdded: null,
 		}
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectOperatingSystem,  } = this.state;
 
 		//conditional rendering & functionality for additional product conditions
 		if (conditionHistory.length != prevState.conditionHistory.length) {
@@ -437,7 +438,7 @@ class ApplicationContainer extends React.Component {
 		});
 	}
 
-	if (timeModifier && timeModifier != prevState.timeModifier) {
+	if (timeModifier != prevState.timeModifier) {
 
 		let calculate;
 		let coefficient = 0;
@@ -467,7 +468,7 @@ class ApplicationContainer extends React.Component {
 		});
 	}
 
-	if (selectedDate && selectedDate != prevState.selectedDate) {
+	if (selectedDate != prevState.selectedDate) {
 
 		let calculate;
 		let coefficient = 0;
@@ -506,6 +507,76 @@ class ApplicationContainer extends React.Component {
 		const deviceOsOptions = operatingSystems.filter(os => os.devices.indexOf(selectedDevice) != -1);
 		this.setState({
 			deviceOsOptions,
+		})
+	}
+
+	if (selectedDevice != prevState.selectedDevice) {
+
+		let calculate;
+		let coefficient = 0;
+		let selectedDeviceCopy;
+		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
+
+		if (!selectedDevice) {
+			coefficient = 1;
+			selectedDeviceCopy = prevState.selectedDevice;
+		} else {
+			selectedDeviceCopy = selectedDevice;
+		}
+
+		switch (selectedDeviceCopy) {
+			case 'Web':
+				calculate = oldEstimatedSegmentSize * (.76 + coefficient);
+				break;
+			case 'Mobile':
+				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+				break;
+		}
+
+		this.setState({
+			estimatedSegmentSize: calculate,
+		})
+	}
+
+	if (selectOperatingSystem != prevState.selectOperatingSystem) {
+
+		let calculate;
+		let coefficient = 0;
+		let selectOperatingSystemCopy;
+		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
+
+		if (!selectOperatingSystem) {
+			coefficient = 1;
+			selectOperatingSystemCopy = prevState.selectOperatingSystem;
+		} else {
+			selectOperatingSystemCopy = selectOperatingSystem;
+		}
+
+		switch (selectOperatingSystemCopy) {
+			case 'MacOS':
+				console.log('mac');
+				calculate = oldEstimatedSegmentSize * (.8 + coefficient);
+				break;
+			case 'iOS':
+				console.log('iOS');
+				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+				break;
+			case 'Windows':
+				console.log('windows');
+				calculate = oldEstimatedSegmentSize * (.5 + coefficient);
+				break;
+			case 'Android':
+				console.log('Android');
+				calculate = oldEstimatedSegmentSize * (.7 + coefficient);
+				break;
+			case 'Other':
+				console.log('other');
+				calculate = oldEstimatedSegmentSize * (.3 + coefficient);
+				break;
+		}
+
+		this.setState({
+			estimatedSegmentSize: calculate,
 		})
 	}
 
