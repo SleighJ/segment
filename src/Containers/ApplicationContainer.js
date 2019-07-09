@@ -180,6 +180,57 @@ const onAroundAndBefore = [
 	}
 ];
 
+const devices = [
+	{
+		key: 1,
+		text: 'Web',
+		value: 'Web',
+		os: ['Mac OS', 'Windows OS', 'Other']
+	},
+	{
+		key: 2,
+		text: 'Mobile',
+		value: 'Mobile',
+		os: ['iOS', 'Android', 'Other']
+	}
+];
+
+const operatingSystems = [
+	{
+		key: 1,
+		text: 'MacOS',
+		value: 'MacOS',
+	},{
+		key: 2,
+		text: 'iOS',
+		value: 'iOS',
+	},{
+		key: 3,
+		text: 'Windows OS',
+		value: 'Windows OS',
+	},{
+		key: 4,
+		text: 'Android',
+		value: 'Android',
+	},{
+		key: 5,
+		text: 'Other',
+		value: 'Other',
+	}
+];
+
+const deviceModifiers = [
+	{
+		key: 1,
+		text: 'Uses',
+		value: 'Uses',
+	},{
+		key: 2,
+		text: 'Does Not Use',
+		value: 'Does Not Use',
+	},
+];
+
 class ApplicationContainer extends React.Component {
 	constructor(props){
 		super(props);
@@ -464,6 +515,19 @@ class ApplicationContainer extends React.Component {
 		}
 	};
 
+	selectDevice = (event, data) => {
+		const {value} = data;
+		const {key} = data.options.find(o => o.value == value);
+
+		this.setState({
+			selectedDevice: value,
+			selectedDeviceObj: {
+				key,
+				value,
+			}
+		})
+	};
+
 	render() {
 		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate } = this.state;
 
@@ -682,15 +746,6 @@ class ApplicationContainer extends React.Component {
 													: <Button content={ formattedDate ? formattedDate : 'Select Date'} onClick={ this.openCalendar }/> }
 
 											</Grid.Column>
-											<Grid.Column align={'left'} style={{width: '100%'}} width={7}>
-												{/*{ this.state.openCalendar ?*/}
-													{/*<Calendar*/}
-													{/*value={ this.state.startDate }*/}
-													{/*onChange={ this.handleDateChange }*/}
-													{/*maxDate={ this.state.startDate }*/}
-												{/*/>*/}
-												{/*: null }*/}
-											</Grid.Column>
 										</Grid.Row>
 									</Grid.Row>
 									</Segment>
@@ -714,32 +769,33 @@ class ApplicationContainer extends React.Component {
 											<Grid.Column width={5} style={{padding: '1%', width: '20%'}}>
 												<Dropdown
 													className={'dropdown'}
-													placeholder='Product Purchased'
+													placeholder='Device'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-													// options={'ca'}
+													options={devices}
+													onChange={ this.selectDevice }
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '15%'}} width={5}>
 												<Dropdown
 													className={'dropdown'}
-													placeholder='On'
+													placeholder='Uses'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-													// options={friendOptions}
+													options={deviceModifiers}
 												/>
 											</Grid.Column>
 											<Grid.Column style={{padding: '1%', width: '65%', color: 'lightGrey'}} width={6} align={'left'}>
-												<Button
-													content={'Select Date'}
+												<Dropdown
+													className={'dropdown'}
+													placeholder='Operating System'
+													fluid
+													selection
+													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
+													options={operatingSystems}
 												/>
-												{/*<Calendar*/}
-													{/*value={ startDate }*/}
-													{/*onChange={ this.handleDateChange }*/}
-													{/*maxDate={ this.state.startDate }*/}
-												{/*/>*/}
 											</Grid.Column>
 										</Grid.Row>
 
