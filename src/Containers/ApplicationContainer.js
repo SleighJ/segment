@@ -269,6 +269,7 @@ class ApplicationContainer extends React.Component {
 			selectedGarments: [],
 			conditionHistory: [],
 			deletedProductHistory: null,
+			activeDelete: null,
 
 			openCalendar: false,
 			startDate: new Date(),
@@ -287,7 +288,7 @@ class ApplicationContainer extends React.Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectedOperatingSystem, deletedProductHistory} = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectedOperatingSystem, deletedProductHistory, activeDelete} = this.state;
 
 		//conditional rendering & functionality for additional product conditions
 		if (conditionHistory.length != prevState.conditionHistory.length) {
@@ -315,6 +316,7 @@ class ApplicationContainer extends React.Component {
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender && !prevState.selectedGender) {
+
 			let calculate;
 			let coefficient = 0;
 			let genderCopy;
@@ -363,6 +365,7 @@ class ApplicationContainer extends React.Component {
 			let newEstimatedSegmentSize;
 			let multiplier;
 			const estimatedSegmentSize = prevState.estimatedSegmentSize;
+			const oldEstimatedSegmentSize = conditionHistory.length > 0 ? conditionHistory[0].estimatedSegmentSize : 100;
 
 			const previousGarments = deletedProductHistory ? deletedProductHistory[0].renderGarmentHistory : null;
 
@@ -381,7 +384,7 @@ class ApplicationContainer extends React.Component {
 						break;
 
 					case false:
-						newEstimatedSegmentSize = prevState.estimatedSegmentSize * (multiplier * previousGarments.length);;
+						newEstimatedSegmentSize = oldEstimatedSegmentSize;
 						break;
 				}
 			} else {
@@ -403,6 +406,22 @@ class ApplicationContainer extends React.Component {
 			this.setState({
 				estimatedSegmentSize: newEstimatedSegmentSize,
 			});
+		}
+
+		if (activeDelete && selectedGender != prevState.selectedGender) {
+			if (conditionHistory.length > 0) {
+				const conditionHistoryCopy = conditionHistory.pop();
+				let oldEstimatedSegmentSize = conditionHistoryCopy.estimatedSegmentSize;
+
+				this.setState({
+					estimatedSegmentSize: oldEstimatedSegmentSize,
+					activeDelete: false,
+				});
+			} else {
+				this.setState({
+					estimatedSegmentSize: 100,
+				})
+			}
 		}
 
 		//<--------Time------->
@@ -706,15 +725,6 @@ class ApplicationContainer extends React.Component {
 		}))
 	};
 
-	deleteCurrentProduction = () => {
-		this.setState({
-			selectedGender: null,
-			selectedAssociation: null,
-			selectedGarments: [],
-		})
-
-	};
-
 	deleteProductCondition = (event, data) => {
 		const { conditionHistory } = this.state;
 		const { id } = data;
@@ -722,7 +732,6 @@ class ApplicationContainer extends React.Component {
 		let previousSegmentSize = conditionHistory[0].estimatedSegmentSize;
 		const conditionHistoryCopy = [...conditionHistory];
 		conditionHistoryCopy.splice(id, 1);
-
 
 		if (!previousSegmentSize) {
 			previousSegmentSize = 100;
@@ -735,6 +744,15 @@ class ApplicationContainer extends React.Component {
 		}))
 	};
 
+	deleteCurrentProduction = () => {
+		this.setState({
+			activeDelete: true,
+			selectedGender: null,
+			selectedAssociation: null,
+			selectedGarments: [],
+		})
+
+	};
 
 	// <-----------Time------------>
 	selectProductInteraction = (event, data) => {
