@@ -185,7 +185,7 @@ const devices = [
 		key: 1,
 		text: 'Web',
 		value: 'Web',
-		os: ['Mac OS', 'Windows OS', 'Other']
+		os: ['Mac', 'Windows', 'Other']
 	},
 	{
 		key: 2,
@@ -209,7 +209,7 @@ const operatingSystems = [
 	},{
 		key: 3,
 		text: 'Windows',
-		value: 'Windows OS',
+		value: 'Windows',
 		devices: [ 'Web' ]
 	},{
 		key: 4,
@@ -275,10 +275,10 @@ class ApplicationContainer extends React.Component {
 			timeModifier: null,
 			selectedDate: null,
 			formattedDate: null,
-
 			timeHistory: [],
+
 			selectedDevice: null,
-			selectOperatingSystem: [],
+			selectedOperatingSystem: null,
 
 			selectedUserFrequency: null,
 			frequencyAdded: null,
@@ -286,7 +286,7 @@ class ApplicationContainer extends React.Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectOperatingSystem,  } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectedOperatingSystem,  } = this.state;
 
 		//conditional rendering & functionality for additional product conditions
 		if (conditionHistory.length != prevState.conditionHistory.length) {
@@ -342,6 +342,14 @@ class ApplicationContainer extends React.Component {
 						calculate = 100 * .02;
 				}
 
+				if (calculate > 100) {
+					calculate = 100;
+				}
+
+				if (calculate < 0) {
+					calculate = 0;
+				}
+
 				this.setState({
 					estimatedSegmentSize: calculate,
 				});
@@ -372,6 +380,14 @@ class ApplicationContainer extends React.Component {
 							calculate = oldEstimatedSegmentSize * .465;
 					}
 
+					if (calculate > 100) {
+						calculate = 100;
+					}
+
+					if (calculate < 0) {
+						calculate = 0;
+					}
+
 					this.setState({
 						estimatedSegmentSize: calculate,
 					});
@@ -400,6 +416,15 @@ class ApplicationContainer extends React.Component {
 							newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
 							break;
 					}
+
+					if (calculate > 100) {
+						calculate = 100;
+					}
+
+					if (calculate < 0) {
+						calculate = 0;
+					}
+
 					this.setState({
 						estimatedSegmentSize: newEstimatedSegmentSize,
 					});
@@ -433,6 +458,15 @@ class ApplicationContainer extends React.Component {
 					calculate = oldEstimatedSegmentSize * (.95 + coefficient);
 			}
 		}
+
+		if (calculate > 100) {
+			calculate = 100;
+		}
+
+		if (calculate < 0) {
+			calculate = 0;
+		}
+
 		this.setState({
 			estimatedSegmentSize: calculate,
 		});
@@ -463,6 +497,15 @@ class ApplicationContainer extends React.Component {
 				calculate = oldEstimatedSegmentSize * (.99 + coefficient);
 				break;
 		}
+
+		if (calculate > 100) {
+			calculate = 100;
+		}
+
+		if (calculate < 0) {
+			calculate = 0;
+		}
+
 		this.setState({
 			estimatedSegmentSize: calculate,
 		});
@@ -495,6 +538,15 @@ class ApplicationContainer extends React.Component {
 				calculate = oldEstimatedSegmentSize * (.99 + coefficient);
 				break;
 		}
+
+		if (calculate > 100) {
+			calculate = 100;
+		}
+
+		if (calculate < 0) {
+			calculate = 0;
+		}
+
 		this.setState({
 			estimatedSegmentSize: calculate,
 		});
@@ -533,56 +585,92 @@ class ApplicationContainer extends React.Component {
 				break;
 		}
 
+		if (calculate > 100) {
+			calculate = 100;
+		}
+
+		if (calculate < 0) {
+			calculate = 0;
+		}
+
 		this.setState({
 			estimatedSegmentSize: calculate,
 		})
 	}
 
-	if (selectOperatingSystem != prevState.selectOperatingSystem) {
+	if (selectedOperatingSystem != prevState.selectedOperatingSystem) {
 
 		let calculate;
 		let coefficient = 0;
-		let selectOperatingSystemCopy;
+		let selectedOperatingSystemCopy;
 		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
 
-		if (!selectOperatingSystem) {
+		if (!selectedOperatingSystem) {
 			coefficient = 1;
-			selectOperatingSystemCopy = prevState.selectOperatingSystem;
+			selectedOperatingSystemCopy = prevState.selectedOperatingSystem;
 		} else {
-			selectOperatingSystemCopy = selectOperatingSystem;
+			selectedOperatingSystemCopy = selectedOperatingSystem;
 		}
 
-		switch (selectOperatingSystemCopy) {
+		switch (selectedOperatingSystemCopy) {
 			case 'MacOS':
-				console.log('mac');
 				calculate = oldEstimatedSegmentSize * (.8 + coefficient);
 				break;
 			case 'iOS':
-				console.log('iOS');
 				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
 				break;
 			case 'Windows':
-				console.log('windows');
 				calculate = oldEstimatedSegmentSize * (.5 + coefficient);
 				break;
 			case 'Android':
-				console.log('Android');
 				calculate = oldEstimatedSegmentSize * (.7 + coefficient);
 				break;
 			case 'Other':
-				console.log('other');
 				calculate = oldEstimatedSegmentSize * (.3 + coefficient);
 				break;
 		}
 
+		if (calculate > 100) {
+			calculate = 100;
+		}
+
+		if (calculate < 0) {
+			calculate = 0;
+		}
+
 		this.setState({
 			estimatedSegmentSize: calculate,
-		})
+		}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize))
 	}
 
 	//<--------for new conditions------->
-
-
+	// if (selectedDevice != prevState.selectedDevice) {
+	//
+	// 	let calculate;
+	// 	let coefficient = 0;
+	// 	let selectedDeviceCopy;
+	// 	const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
+	//
+	// 	if (!selectedDevice) {
+	// 		coefficient = 1;
+	// 		selectedDeviceCopy = prevState.selectedDevice;
+	// 	} else {
+	// 		selectedDeviceCopy = selectedDevice;
+	// 	}
+	//
+	// 	switch (selectedDeviceCopy) {
+	// 		case 'Web':
+	// 			calculate = oldEstimatedSegmentSize * (.76 + coefficient);
+	// 			break;
+	// 		case 'Mobile':
+	// 			calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+	// 			break;
+	// 	}
+	//
+	// 	this.setState({
+	// 		estimatedSegmentSize: calculate,
+	// 	})
+	// }
 	}; //compWillMount
 
 
@@ -780,17 +868,13 @@ class ApplicationContainer extends React.Component {
 		const { key } = data.options.find(o => o.value == value);
 
 		this.setState({
-			selectedOperatingSystem: {
-				key,
-				value,
-			}
+			selectedOperatingSystem: value,
 		})
 	};
 
 	removeTechnology = () => {
 		this.setState({
 			selectedDevice: null,
-			selectedDeviceObj: null,
 			selectedOperatingSystem: null,
 		})
 	};
@@ -820,6 +904,7 @@ class ApplicationContainer extends React.Component {
 	render() {
 		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions, startDate, productInteraction, timeModifier, selectedDevice, selectedOperatingSystem } = this.state;
 
+		// console.log(this.state)
 		return(
 			<div>
 
