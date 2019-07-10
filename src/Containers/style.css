@@ -33,3 +33,8 @@
 .ui.multiple.search.dropdown>input.search {
     margin-top: 2%;
 }
+
+.ui.default.dropdown:not(.button)>.text, .ui.dropdown:not(.button)>.default.text {
+    display: unset;
+    vertical-align: text-bottom;
+}

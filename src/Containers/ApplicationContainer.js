@@ -313,77 +313,69 @@ class ApplicationContainer extends React.Component {
 		}
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
-		if (selectedGender != prevState.selectedGender) {
+		if (selectedGender != prevState.selectedGender && !prevState.selectedGender) {
+
 			let calculate;
+			let coefficient = 0;
+			let genderCopy;
 			const conditions = conditionHistory.length;
+			const previousConditions = prevState.conditionHistory.length;
+			const estimatedSegmentSize = conditions == 0 ? 100 : conditions < previousConditions ? conditionHistory.estimatedSegmentSize : null;
+
+			if (conditions < previousConditions) {
+				coefficient = 1;
+				genderCopy = prevState.selectedGender.value;
+			} else {
+				genderCopy = selectedGender.value;
+			}
 
 			//if there is only 1 line of product conditions
-			if (conditions == 0) {
-
-				let gender = selectedGender.value;
-
-				switch (gender) {
+				switch (genderCopy) {
 					case 'Unisex':
-						calculate = 100 * .75;
+						calculate = estimatedSegmentSize * (.75 + coefficient);
 						break;
 					case 'Men':
-						calculate = 100 * .285;
+						calculate = estimatedSegmentSize * (.285 + coefficient);
 						break;
 					case 'Women':
-						calculate = 100 * .465;
+						calculate = estimatedSegmentSize * (.465 + coefficient);
 						break;
 					case 'Boys' :
-						calculate = 100 * .095;
+						calculate = estimatedSegmentSize * (.095 + coefficient);
 						break;
 					case 'Girls' :
-						calculate = 100 * .155;
+						calculate = estimatedSegmentSize * (.155 + coefficient);
 						break;
 					case 'Aliens' :
-						calculate = 100 * .02;
-				}
-
-				this.setState({
-					estimatedSegmentSize: calculate,
-				});
-			} else {
-
-
-				if (selectedGender) {
-					//if product conditions is greater than 1, calculate total from previous state
-					let gender = selectedGender.value;
-					let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-
-					switch (gender) {
-						case 'Unisex':
-							calculate = oldEstimatedSegmentSize * .75;
-							break;
-						case 'Men':
-							calculate = oldEstimatedSegmentSize * .285;
-							break;
-						case 'Women':
-							calculate = oldEstimatedSegmentSize * .465;
-							break;
-						case 'Boys' :
-							calculate = oldEstimatedSegmentSize * .095;
-							break;
-						case 'Girls' :
-							calculate = oldEstimatedSegmentSize * .155;
-							break;
-						case 'Aliens' :
-							calculate = oldEstimatedSegmentSize * .465;
-					}
-
-					this.setState({
-						estimatedSegmentSize: calculate,
-					});
-				}
+						calculate = estimatedSegmentSize * (.02 + coefficient);
 			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			});
 		}
 
 		if (selectedGarments != prevState.selectedGarments) {
+			// let calculate;
+			// let coefficient = 0;
+			// let genderCopy;
+			// const conditions = conditionHistory.length;
+			// const previousConditions = prevState.conditionHistory.length;
+			// const estimatedSegmentSize = conditions.length == 0 ? 100 : prevState.estimatedSegmentSize;
+			//
+			// if (conditions < previousConditions) {
+			// 	coefficient = 1;
+			// 	genderCopy = prevState.selectedGender.value;
+			// } else {
+			// 	genderCopy = selectedGender.value;
+			// }
+
+
+
+			let calculate;
+			let coefficient = 0;
 			let addingGarments;
 			let newEstimatedSegmentSize;
-			let calculate;
 
 			if (selectedGarments.length > prevState.selectedGarments.length) {
 				addingGarments = true;
@@ -726,7 +718,7 @@ class ApplicationContainer extends React.Component {
 	};
 
 	addProductCondition = () => {
-		const { selectedGender, selectedAssociation, selectedGarments } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize } = this.state;
 		let renderGarmentHistory = [];
 
 		//for rendering past choices for garments
@@ -736,6 +728,7 @@ class ApplicationContainer extends React.Component {
 
 		//saves history of product conditions
 		let stateSnapShot = {
+			estimatedSegmentSize,
 			selectedGender,
 			selectedAssociation: selectedAssociation,
 			selectedGarments: [selectedGarments],
@@ -750,27 +743,27 @@ class ApplicationContainer extends React.Component {
 
 	deleteCurrentProduction = () => {
 
-		// selectedGender: null,
-		// 	selectedAssociation: null,
-		// 	selectedGarments: [],
-
 		this.setState({
 			selectedGender: null,
 			selectedAssociation: null,
 			selectedGarments: [],
 		})
 
-	}
+	};
 
 	deleteProductCondition = (event, data) => {
 		const { conditionHistory } = this.state;
 		const { id } = data;
 
+		const previousSegmentSize = conditionHistory[0].estimatedSegmentSize;
 		const conditionHistoryCopy = [...conditionHistory];
 		conditionHistoryCopy.splice(id, 1);
 
+		console.log(conditionHistory)
+
 		this.setState(prevState => ({
 			conditionHistory: conditionHistoryCopy,
+			estimatedSegmentSize: previousSegmentSize,
 		}))
 	};
 
@@ -1061,7 +1054,7 @@ class ApplicationContainer extends React.Component {
 										<Grid.Column align={'center'} style={{padding: '1%', width: '10%'}} width={3}>
 											<Button
 												align={'center'}
-												onClick={ this.deleteProductCondition }
+												onClick={ this.deleteCurrentProduction }
 												floated={'right'} size={'tiny'}
 												style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '100%'}}
 											>
