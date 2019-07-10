@@ -885,11 +885,11 @@ class ApplicationContainer extends React.Component {
 
 	// <---------Frequency------------>
 	addFrequencyCondition = (event, data) => {
-		const { value } = data;
 
 		this.setState({
-			frequencyAdded: value,
+			JSON: true,
 		})
+
 	};
 
 	render() {
@@ -1197,11 +1197,10 @@ class ApplicationContainer extends React.Component {
 											<Grid.Column width={3} style={{paddingLeft: '8.5%', width: '40%'}}>
 												<Dropdown
 													className={'dropdown'}
-													placeholder='User Frequency'
+													placeholder='Give Me JSON Or Give Me Death'
 													fluid
 													selection
 													style={{border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', fontSize: '12px', width: '100%'}}
-													options={ userConditions }
 													onChange={ this.selectFrequency }
 												/>
 											</Grid.Column>
@@ -1211,10 +1210,23 @@ class ApplicationContainer extends React.Component {
 													size={'tiny'}
 													style={{fontFamily: 'IBM Plex Sans', border: '1px solid lightGrey', backgroundColor: 'rgb(38, 165, 132)', color: 'white'}}
 													onClick={ this.addFrequencyCondition }
-												>+Add</Button>
+												>JSON</Button>
 											</Grid.Column>
 
 										</Grid.Row>
+
+										<div>
+											{this.state.JSON ?
+												<div>
+													<p>{ JSON.stringify(conditionHistory) }</p>
+													<p>{ JSON.stringify(productInteraction) }</p>
+													<p>{ JSON.stringify(formattedDate) }</p>
+													<p>{ JSON.stringify(selectedDevice) }</p>
+													<p>{ JSON.stringify(selectedOperatingSystem) }</p>
+												</div>
+											:
+											null}
+										</div>
 
 									</Segment>
 								</Grid>
