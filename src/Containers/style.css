@@ -29,3 +29,7 @@
     width: 0;
     margin: 0;
 }
+
+.ui.multiple.search.dropdown>input.search {
+    margin-top: 2%;
+}

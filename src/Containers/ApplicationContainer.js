@@ -47,13 +47,13 @@ const genderArray = [
 const associationArray = [
 	{
 		key: 0,
-		text: 'interested in',
-		value: 'interested in',
+		text: 'into',
+		value: 'into',
 	},
 	{
 		key: 1,
-		text: 'not interested in',
-		value: 'not interested in',
+		text: 'not into',
+		value: 'not into',
 	},
 ];
 
@@ -958,7 +958,7 @@ class ApplicationContainer extends React.Component {
 															disabled={ true }
 															fluid
 															selection
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%' }}
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%', overflow: 'hidden' }}
 															onChange={ this.selectGender }
 														/>
 
@@ -970,7 +970,7 @@ class ApplicationContainer extends React.Component {
 															fluid
 															selection
 															disabled={ true }
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%' }}
+															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%', lineHeight: '20%' }}
 															disabled={ this.state.selectedGender ? false : true }
 															onChange={ this.selectAssociation }
 														/>
@@ -978,7 +978,7 @@ class ApplicationContainer extends React.Component {
 													<Grid.Column style={{padding: '1%', width: '55%'}} width={3}>
 														<Dropdown
 															placeholder={ renderGarmentHistory.join(', ') }
-															style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%' }}
+															style={{ textAlign: 'center', border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', height: '100%', overflow: 'hidden' }}
 															disabled={ true }
 															multiple
 															search
@@ -1004,7 +1004,7 @@ class ApplicationContainer extends React.Component {
 										})
 									}
 
-									<Grid.Row style={{display: 'flex'}}>
+									<Grid.Row style={{display: 'flex', maxHeight: '100%'}}>
 										<Grid.Column style={{padding: '1%', width: '20%'}} width={3}>
 											<Dropdown
 												id={'asdf'}
@@ -1027,14 +1027,14 @@ class ApplicationContainer extends React.Component {
 											> +More </Button>
 
 										</Grid.Column>
-										<Grid.Column style={{padding: '1%', width: '15%',}} width={3}>
+										<Grid.Column style={{padding: '1%', width: '15%'}} width={3}>
 											<Dropdown
 												id={'asdf-1'}
 												className={'dropdown'}
 												placeholder='Association'
 												fluid
 												selection
-												style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px' }}
+												style={{ border: '1.2px solid', borderColor: 'rgb(180, 180, 180)', width: '100%', fontSize: '12px', maxHeight: '40%', display: 'flex' }}
 												disabled={ genderGarments ? false : true }
 												options={ associationArray }
 												onChange={ this.selectAssociation }
@@ -1045,7 +1045,7 @@ class ApplicationContainer extends React.Component {
 											<Dropdown
 												id={'asdf-2'}
 												placeholder={'Select Item'}
-												style={{ fontSize: '12px', maxWidth: '100%' }}
+												style={{ fontSize: '12px', width: '100%' }}
 												multiple
 												selection
 												options={ genderGarments }
@@ -1065,7 +1065,7 @@ class ApplicationContainer extends React.Component {
 												floated={'right'} size={'tiny'}
 												style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '100%'}}
 											>
-												<Icon name={'trash'}></Icon>
+												<Icon align={'center'} style={{paddingLeft: '40%', paddingRight: '50%'}} name={'trash'}></Icon>
 											</Button>
 										</Grid.Column>
 									</Grid.Row>
