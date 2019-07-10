@@ -357,8 +357,7 @@ class ApplicationContainer extends React.Component {
 			});
 		}
 
-		console.log(this.state.conditionHistory)
-
+		//add/remove individual garments
 		if (selectedGarments != prevState.selectedGarments && selectedGarments) {
 			const estimatedSegmentSize = prevState.estimatedSegmentSize;
 			const oldEstimatedSegmentSize = conditionHistory.length > 0 ? conditionHistory[0].estimatedSegmentSize : 100;
@@ -379,12 +378,13 @@ class ApplicationContainer extends React.Component {
 				}
 			} else {
 				switch (addingGarments) {
+					//adding garments
 					case true:
 						newEstimatedSegmentSize = estimatedSegmentSize * .9;
 						break;
-
+					//removing garments
 					case false:
-						newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+						newEstimatedSegmentSize = selectedGarments && selectedGender ? estimatedSegmentSize * 1.1 : oldEstimatedSegmentSize;
 						break;
 				}
 			}
@@ -392,7 +392,6 @@ class ApplicationContainer extends React.Component {
 			if (newEstimatedSegmentSize > 100) {
 				newEstimatedSegmentSize = 100;
 			}
-
 			this.setState({
 				estimatedSegmentSize: newEstimatedSegmentSize,
 			});
