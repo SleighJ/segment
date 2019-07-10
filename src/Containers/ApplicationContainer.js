@@ -288,9 +288,20 @@ class ApplicationContainer extends React.Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectedOperatingSystem, deletedProductHistory, activeDelete} = this.state;
+		const {
+			selectedGender,
+			selectedGarments,
+			conditionHistory,
+			selectedDevice,
+			productInteraction,
+			timeModifier,
+			selectedDate,
+			selectedOperatingSystem,
+			deletedProductHistory,
+			activeDelete
+		} = this.state;
 
-		//conditional rendering & functionality for additional product conditions
+		//for conditional rendering w/ Semantic UI - she's picky.
 		if (conditionHistory.length != prevState.conditionHistory.length) {
 			this.setState({
 				selectedGarments: [],
@@ -316,7 +327,6 @@ class ApplicationContainer extends React.Component {
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender && !prevState.selectedGender) {
-
 			let calculate;
 			let genderCopy;
 			let coefficient = 0;
@@ -362,11 +372,15 @@ class ApplicationContainer extends React.Component {
 			const estimatedSegmentSize = prevState.estimatedSegmentSize;
 			const oldEstimatedSegmentSize = conditionHistory.length > 0 ? conditionHistory[0].estimatedSegmentSize : 100;
 			const previousGarments = deletedProductHistory ? deletedProductHistory[0].renderGarmentHistory : null;
-			const addingGarments = selectedGarments.length > prevState.selectedGarments.length;
+			const renderGarmetHistory = conditionHistory.length > 0 ? conditionHistory[0].renderGarmentHistory : null;
+			const addingGarments = selectedGarments.length != 0 ? selectedGarments.length > prevState.selectedGarments.length : false
 
 			let newEstimatedSegmentSize;
 
+			//TODO: tad bit buggy
+			//for removing historical product condition lines
 			if (previousGarments) {
+				console.log('yes')
 				switch (addingGarments) {
 					case true:
 						newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
@@ -384,7 +398,9 @@ class ApplicationContainer extends React.Component {
 						break;
 					//removing garments
 					case false:
-						newEstimatedSegmentSize = selectedGarments && selectedGender ? estimatedSegmentSize * 1.1 : oldEstimatedSegmentSize;
+						console.log(renderGarmetHistory, selectedGarments, selectedGender)
+						console.log(estimatedSegmentSize * 1.1, oldEstimatedSegmentSize);
+						newEstimatedSegmentSize = selectedGarments && selectedGender ? estimatedSegmentSize * 1.1 : conditionHistory.length == 0 ? oldEstimatedSegmentSize : estimatedSegmentSize;
 						break;
 				}
 			}
@@ -625,6 +641,10 @@ class ApplicationContainer extends React.Component {
 			})
 		}
 	}; //compWillMount
+
+
+
+
 
 	// <---------Products------------>
 	selectGender = (event, data) => {

@@ -12,15 +12,4 @@ export default class App extends Component {
 			</div>
         )
     }
-
 }
-
-// function App() {
-//   return (
-//       <div style={{backgroundColor: 'rgb(242, 243, 243)'}}>
-//         <ApplicationContainer />
-//       </div>
-//   );
-// }
-
-// export default App;
