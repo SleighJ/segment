@@ -355,6 +355,7 @@ class ApplicationContainer extends React.Component {
 				});
 			} else {
 
+				//gendergarments cause a prob? im burnt i dont know tho
 				if (selectedGender) {
 					//if product conditions is greater than 1, calculate total from previous state
 					let gender = selectedGender.value;
@@ -393,284 +394,281 @@ class ApplicationContainer extends React.Component {
 					});
 				}
 			}
+		}
 
-			if (selectedGarments) {
-				//if selected garments to not match the previous selected garments, save the new data as selected garments
-				if (selectedGarments != prevState.selectedGarments) {
-					let addingGarments;
-					// let oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-					let newEstimatedSegmentSize;
+		if (selectedGarments != prevState.selectedGarments) {
+			let addingGarments;
+			let newEstimatedSegmentSize;
+			let calculate;
 
-					if (selectedGarments.length > prevState.selectedGarments.length) {
-						addingGarments = true;
-					} else {
-						addingGarments = false;
-					}
+			if (selectedGarments.length > prevState.selectedGarments.length) {
+				addingGarments = true;
+			} else {
+				addingGarments = false;
+			}
 
-					switch (addingGarments) {
-						case true:
-							newEstimatedSegmentSize = estimatedSegmentSize * .9;
-							break;
+			switch (addingGarments) {
+				case true:
+					newEstimatedSegmentSize = estimatedSegmentSize * .9;
+					break;
 
-						case false:
-							newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
-							break;
-					}
+				case false:
+					newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+					break;
+			}
 
-					if (calculate > 100) {
-						calculate = 100;
-					}
+			if (calculate > 100) {
+				calculate = 100;
+			}
 
-					if (calculate < 0) {
-						calculate = 0;
-					}
+			if (calculate < 0) {
+				calculate = 0;
+			}
 
-					this.setState({
-						estimatedSegmentSize: newEstimatedSegmentSize,
-					});
+			this.setState({
+				estimatedSegmentSize: newEstimatedSegmentSize,
+			});
+		}
+
+		//<--------Time------->
+
+		if (productInteraction != prevState.productInteraction) {
+
+			let calculate;
+			let coefficient = 0;
+			let productInteractionCopy;
+			const oldEstimatedSegmentSize = prevState.estimatedSegmentSize ? prevState.estimatedSegmentSize : null;
+
+			//if no productInteraction, its been removed, switch the coefficient, and make the copy
+			if (!productInteraction) {
+				coefficient = 1;
+				productInteractionCopy = prevState.productInteraction;
+			} else {
+				productInteractionCopy = productInteraction;
+			}
+
+			if (productInteractionCopy) {
+				switch (productInteractionCopy) {
+					case 'Purchased':
+						calculate = oldEstimatedSegmentSize * (.65 + coefficient);
+						break;
+					case 'Searched':
+						calculate = oldEstimatedSegmentSize * (.95 + coefficient);
 				}
 			}
-		}
 
-	//<--------Time------->
-
-	if (productInteraction != prevState.productInteraction) {
-
-		let calculate;
-		let coefficient = 0;
-		let productInteractionCopy;
-		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-
-		//if no productInteraction, its been removed, switch the coefficient, and make the copy
-		if (!productInteraction) {
-			coefficient = 1;
-			productInteractionCopy = prevState.productInteraction;
-		} else {
-			productInteractionCopy = productInteraction;
-		}
-
-		if (productInteractionCopy) {
-			switch (productInteractionCopy) {
-				case 'Purchased':
-					calculate = oldEstimatedSegmentSize * (.65 + coefficient);
-					break;
-				case 'Searched':
-					calculate = oldEstimatedSegmentSize * (.95 + coefficient);
+			if (calculate > 100) {
+				calculate = 100;
 			}
+
+			if (calculate < 0) {
+				calculate = 0;
+			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize));
 		}
 
-		if (calculate > 100) {
-			calculate = 100;
+		if (timeModifier != prevState.timeModifier) {
+
+			let calculate;
+			let coefficient = 0;
+			let timeModifierCopy;
+			const oldEstimatedSegmentSize = prevState.estimatedSegmentSize ? prevState.estimatedSegmentSize : null;
+
+			if (!timeModifier) {
+				coefficient = 1;
+				timeModifierCopy = prevState.timeModifierCopy;
+			} else {
+				timeModifierCopy = timeModifier
+			}
+
+			switch (timeModifierCopy) {
+				case 'On':
+					calculate = oldEstimatedSegmentSize * (.5 + coefficient);
+					break;
+				case 'Around':
+					calculate = oldEstimatedSegmentSize * (.95 + coefficient);
+					break;
+				case 'Before':
+					calculate = oldEstimatedSegmentSize * (.99 + coefficient);
+					break;
+			}
+
+			if (calculate > 100) {
+				calculate = 100;
+			}
+
+			if (calculate < 0) {
+				calculate = 0;
+			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize));
 		}
 
-		if (calculate < 0) {
-			calculate = 0;
+		if (selectedDate != prevState.selectedDate) {
+
+			let calculate;
+			let coefficient = 0;
+			let selectedDateCopy;
+			const oldEstimatedSegmentSize = prevState.estimatedSegmentSize ? prevState.estimatedSegmentSize : null;
+
+			if (!selectedDate) {
+				coefficient = 1;
+				selectedDateCopy = prevState.selectedDate;
+			} else {
+				selectedDateCopy = selectedDate;
+			}
+
+			let month = selectedDateCopy.getMonth();
+
+			switch (month) {
+				case 10 || 11 || 12:
+					calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+					break;
+				case 1||2||3||4||5:
+					calculate = oldEstimatedSegmentSize * (.899 + coefficient);
+					break;
+				case 6||7||8||9:
+					calculate = oldEstimatedSegmentSize * (.99 + coefficient);
+					break;
+			}
+
+			if (calculate > 100) {
+				calculate = 100;
+			}
+
+			if (calculate < 0) {
+				calculate = 0;
+			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize));
 		}
 
-		this.setState({
-			estimatedSegmentSize: calculate,
-		});
-	}
+		//<--------Technology------->
 
-	if (timeModifier != prevState.timeModifier) {
-
-		let calculate;
-		let coefficient = 0;
-		let timeModifierCopy;
-		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-
-		if (!timeModifier) {
-			coefficient = 1;
-			timeModifierCopy = prevState.timeModifierCopy;
-		} else {
-			timeModifierCopy = timeModifier
+		//match operating systems with selected devices
+		if (selectedDevice && selectedDevice != prevState.selectedDevice) {
+			const deviceOsOptions = operatingSystems.filter(os => os.devices.indexOf(selectedDevice) != -1);
+			this.setState({
+				deviceOsOptions,
+			})
 		}
 
-		switch (timeModifierCopy) {
-			case 'On':
-				calculate = oldEstimatedSegmentSize * (.5 + coefficient);
-				break;
-			case 'Around':
-				calculate = oldEstimatedSegmentSize * (.95 + coefficient);
-				break;
-			case 'Before':
-				calculate = oldEstimatedSegmentSize * (.99 + coefficient);
-				break;
+		if (selectedDevice != prevState.selectedDevice) {
+
+			let calculate;
+			let coefficient = 0;
+			let selectedDeviceCopy;
+			const oldEstimatedSegmentSize = prevState.estimatedSegmentSize ? prevState.estimatedSegmentSize : null;
+
+			if (!selectedDevice) {
+				coefficient = 1;
+				selectedDeviceCopy = prevState.selectedDevice;
+			} else {
+				selectedDeviceCopy = selectedDevice;
+			}
+
+			switch (selectedDeviceCopy) {
+				case 'Web':
+					calculate = oldEstimatedSegmentSize * (.76 + coefficient);
+					break;
+				case 'Mobile':
+					calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+					break;
+			}
+
+			if (calculate > 100) {
+				calculate = 100;
+			}
+
+			if (calculate < 0) {
+				calculate = 0;
+			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize))
 		}
 
-		if (calculate > 100) {
-			calculate = 100;
+		if (selectedOperatingSystem != prevState.selectedOperatingSystem) {
+
+			let calculate;
+			let coefficient = 0;
+			let selectedOperatingSystemCopy;
+			const oldEstimatedSegmentSize = prevState.estimatedSegmentSize ? prevState.estimatedSegmentSize : null;
+
+			if (!selectedOperatingSystem) {
+				coefficient = 1;
+				selectedOperatingSystemCopy = prevState.selectedOperatingSystem;
+			} else {
+				selectedOperatingSystemCopy = selectedOperatingSystem;
+			}
+
+			switch (selectedOperatingSystemCopy) {
+				case 'MacOS':
+					calculate = oldEstimatedSegmentSize * (.8 + coefficient);
+					break;
+				case 'iOS':
+					calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+					break;
+				case 'Windows':
+					calculate = oldEstimatedSegmentSize * (.8 + coefficient);
+					break;
+				case 'Android':
+					calculate = oldEstimatedSegmentSize * (.8 + coefficient);
+					break;
+				case 'Other':
+					calculate = oldEstimatedSegmentSize * (.8 + coefficient);
+					break;
+			}
+
+			if (calculate > 100) {
+				calculate = 100;
+			}
+
+			if (calculate < 0) {
+				calculate = 0;
+			}
+
+			this.setState({
+				estimatedSegmentSize: calculate,
+			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize))
 		}
 
-		if (calculate < 0) {
-			calculate = 0;
-		}
-
-		this.setState({
-			estimatedSegmentSize: calculate,
-		});
-	}
-
-	if (selectedDate != prevState.selectedDate) {
-
-		let calculate;
-		let coefficient = 0;
-		let selectedDateCopy;
-		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-
-		if (!selectedDate) {
-			coefficient = 1;
-			selectedDateCopy = prevState.selectedDate;
-		} else {
-			selectedDateCopy = selectedDate;
-		}
-
-		let month = selectedDateCopy.getMonth();
-
-		switch (month) {
-			case 10 || 11 || 12:
-				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
-				break;
-			case 1||2||3||4||5:
-				calculate = oldEstimatedSegmentSize * (.899 + coefficient);
-				break;
-			case 6||7||8||9:
-				calculate = oldEstimatedSegmentSize * (.99 + coefficient);
-				break;
-		}
-
-		if (calculate > 100) {
-			calculate = 100;
-		}
-
-		if (calculate < 0) {
-			calculate = 0;
-		}
-
-		this.setState({
-			estimatedSegmentSize: calculate,
-		});
-	}
-
-	//<--------Technology------->
-
-	//match operating systems with selected devices
-	if (selectedDevice && selectedDevice != prevState.selectedDevice) {
-		const deviceOsOptions = operatingSystems.filter(os => os.devices.indexOf(selectedDevice) != -1);
-		this.setState({
-			deviceOsOptions,
-		})
-	}
-
-	if (selectedDevice != prevState.selectedDevice) {
-
-		let calculate;
-		let coefficient = 0;
-		let selectedDeviceCopy;
-		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-
-		if (!selectedDevice) {
-			coefficient = 1;
-			selectedDeviceCopy = prevState.selectedDevice;
-		} else {
-			selectedDeviceCopy = selectedDevice;
-		}
-
-		switch (selectedDeviceCopy) {
-			case 'Web':
-				calculate = oldEstimatedSegmentSize * (.76 + coefficient);
-				break;
-			case 'Mobile':
-				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
-				break;
-		}
-
-		if (calculate > 100) {
-			calculate = 100;
-		}
-
-		if (calculate < 0) {
-			calculate = 0;
-		}
-
-		this.setState({
-			estimatedSegmentSize: calculate,
-		})
-	}
-
-	if (selectedOperatingSystem != prevState.selectedOperatingSystem) {
-
-		let calculate;
-		let coefficient = 0;
-		let selectedOperatingSystemCopy;
-		const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-
-		if (!selectedOperatingSystem) {
-			coefficient = 1;
-			selectedOperatingSystemCopy = prevState.selectedOperatingSystem;
-		} else {
-			selectedOperatingSystemCopy = selectedOperatingSystem;
-		}
-
-		switch (selectedOperatingSystemCopy) {
-			case 'MacOS':
-				calculate = oldEstimatedSegmentSize * (.8 + coefficient);
-				break;
-			case 'iOS':
-				calculate = oldEstimatedSegmentSize * (.9 + coefficient);
-				break;
-			case 'Windows':
-				calculate = oldEstimatedSegmentSize * (.5 + coefficient);
-				break;
-			case 'Android':
-				calculate = oldEstimatedSegmentSize * (.7 + coefficient);
-				break;
-			case 'Other':
-				calculate = oldEstimatedSegmentSize * (.3 + coefficient);
-				break;
-		}
-
-		if (calculate > 100) {
-			calculate = 100;
-		}
-
-		if (calculate < 0) {
-			calculate = 0;
-		}
-
-		this.setState({
-			estimatedSegmentSize: calculate,
-		}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize))
-	}
-
-	//<--------for new conditions------->
-	// if (selectedDevice != prevState.selectedDevice) {
-	//
-	// 	let calculate;
-	// 	let coefficient = 0;
-	// 	let selectedDeviceCopy;
-	// 	const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-	//
-	// 	if (!selectedDevice) {
-	// 		coefficient = 1;
-	// 		selectedDeviceCopy = prevState.selectedDevice;
-	// 	} else {
-	// 		selectedDeviceCopy = selectedDevice;
-	// 	}
-	//
-	// 	switch (selectedDeviceCopy) {
-	// 		case 'Web':
-	// 			calculate = oldEstimatedSegmentSize * (.76 + coefficient);
-	// 			break;
-	// 		case 'Mobile':
-	// 			calculate = oldEstimatedSegmentSize * (.9 + coefficient);
-	// 			break;
-	// 	}
-	//
-	// 	this.setState({
-	// 		estimatedSegmentSize: calculate,
-	// 	})
-	// }
+		//<--------for new conditions------->
+		// if (selectedDevice != prevState.selectedDevice) {
+		//
+		// 	let calculate;
+		// 	let coefficient = 0;
+		// 	let selectedDeviceCopy;
+		// 	const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
+		//
+		// 	if (!selectedDevice) {
+		// 		coefficient = 1;
+		// 		selectedDeviceCopy = prevState.selectedDevice;
+		// 	} else {
+		// 		selectedDeviceCopy = selectedDevice;
+		// 	}
+		//
+		// 	switch (selectedDeviceCopy) {
+		// 		case 'Web':
+		// 			calculate = oldEstimatedSegmentSize * (.76 + coefficient);
+		// 			break;
+		// 		case 'Mobile':
+		// 			calculate = oldEstimatedSegmentSize * (.9 + coefficient);
+		// 			break;
+		// 	}
+		//
+		// 	this.setState({
+		// 		estimatedSegmentSize: calculate,
+		// 	})
+		// }
 	}; //compWillMount
 
 
@@ -728,9 +726,10 @@ class ApplicationContainer extends React.Component {
 
 		//if garments are selected
 		if (selectedGarments) {
-
+			console.log(selectedGarments, value)
 			//if user is removing clothing, remove it from 'selectedGarments' array
 			if (selectedGarments.length >= value.length) {
+
 				let modifiedSelectedGarments = [];
 
 				let selectedGarmentsCopy = [...selectedGarments];
@@ -743,6 +742,7 @@ class ApplicationContainer extends React.Component {
 			}
 
 			//if user is adding clothing, add it to the 'selectedGarments' array
+			console.log(selectedGarments, value)
 			if (selectedGarments.length <= value.length) {
 				this.setState(prevState => ({
 					selectedGarments: [...prevState.selectedGarments, incomingEntry]
@@ -1062,8 +1062,8 @@ class ApplicationContainer extends React.Component {
 												selection
 												options={ genderGarments }
 												onChange={ this.selectGarments }
-												content={ selectedGarments.map(garment => ({
-													key: 'asdf',
+												content={ selectedGarments.map((garment, i) => ({
+													key: i,
 													text: garment,
 													value: garment,
 												})) }
@@ -1182,13 +1182,6 @@ class ApplicationContainer extends React.Component {
 
 									</Segment>
 								</Grid>
-
-
-
-
-
-
-
 
 								{/*New Condition*/}
 								<Grid columns={'equal'} container={true} centered>
