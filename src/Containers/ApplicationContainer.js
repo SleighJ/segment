@@ -615,49 +615,7 @@ class ApplicationContainer extends React.Component {
 				estimatedSegmentSize: calculate,
 			})
 		}
-
-		//<--------for new conditions------->
-		// if (selectedDevice != prevState.selectedDevice) {
-		//
-		// 	let calculate;
-		// 	let coefficient = 0;
-		// 	let selectedDeviceCopy;
-		// 	const oldEstimatedSegmentSize = prevState.estimatedSegmentSize;
-		//
-		// 	if (!selectedDevice) {
-		// 		coefficient = 1;
-		// 		selectedDeviceCopy = prevState.selectedDevice;
-		// 	} else {
-		// 		selectedDeviceCopy = selectedDevice;
-		// 	}
-		//
-		// 	switch (selectedDeviceCopy) {
-		// 		case 'Web':
-		// 			calculate = oldEstimatedSegmentSize * (.76 + coefficient);
-		// 			break;
-		// 		case 'Mobile':
-		// 			calculate = oldEstimatedSegmentSize * (.9 + coefficient);
-		// 			break;
-		// 	}
-		//
-		// 	this.setState({
-		// 		estimatedSegmentSize: calculate,
-		// 	})
-		// }
 	}; //compWillMount
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	// <---------Products------------>
 	selectGender = (event, data) => {
@@ -840,11 +798,6 @@ class ApplicationContainer extends React.Component {
 		const {value} = data;
 		const {key} = data.options.find(o => o.value == value);
 
-		// const technologyHistoryObj = {
-		// 	key,
-		// 	value,
-		// };
-
 		this.setState({
 			selectedDevice: value,
 			selectedDeviceObj: {
@@ -895,7 +848,6 @@ class ApplicationContainer extends React.Component {
 	render() {
 		const { estimatedSegmentSize, genderGarments, selectedGarments, selectedAssociation, selectedGender, conditionHistory, formattedDate, deviceOsOptions, startDate, productInteraction, timeModifier, selectedDevice, selectedOperatingSystem } = this.state;
 
-		// console.log(this.state)
 		return(
 			<div>
 
