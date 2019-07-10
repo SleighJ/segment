@@ -318,8 +318,8 @@ class ApplicationContainer extends React.Component {
 		if (selectedGender != prevState.selectedGender && !prevState.selectedGender) {
 
 			let calculate;
-			let coefficient = 0;
 			let genderCopy;
+			let coefficient = 0;
 			const conditions = conditionHistory.length;
 			const previousConditions = prevState.conditionHistory.length;
 			const estimatedSegmentSize = conditions > 0 ? prevState.estimatedSegmentSize : 100;
@@ -357,25 +357,15 @@ class ApplicationContainer extends React.Component {
 			});
 		}
 
-		if (selectedGarments != prevState.selectedGarments && selectedGarments) {
+		console.log(this.state.conditionHistory)
 
-			let calculate;
-			let coefficient = 0;
-			let addingGarments;
-			let newEstimatedSegmentSize;
-			let multiplier;
+		if (selectedGarments != prevState.selectedGarments && selectedGarments) {
 			const estimatedSegmentSize = prevState.estimatedSegmentSize;
 			const oldEstimatedSegmentSize = conditionHistory.length > 0 ? conditionHistory[0].estimatedSegmentSize : 100;
-
 			const previousGarments = deletedProductHistory ? deletedProductHistory[0].renderGarmentHistory : null;
+			const addingGarments = selectedGarments.length > prevState.selectedGarments.length;
 
-			if (selectedGarments.length > prevState.selectedGarments.length) {
-				addingGarments = true;
-				multiplier = .9
-			} else {
-				addingGarments = false;
-				multiplier = 1.1;
-			}
+			let newEstimatedSegmentSize;
 
 			if (previousGarments) {
 				switch (addingGarments) {
@@ -410,7 +400,8 @@ class ApplicationContainer extends React.Component {
 
 		if (activeDelete && selectedGender != prevState.selectedGender) {
 			if (conditionHistory.length > 0) {
-				const conditionHistoryCopy = conditionHistory.pop();
+				const conditionCopy = [...conditionHistory];
+				const conditionHistoryCopy = conditionCopy.pop();
 				let oldEstimatedSegmentSize = conditionHistoryCopy.estimatedSegmentSize;
 
 				this.setState({
