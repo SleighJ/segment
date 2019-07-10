@@ -410,7 +410,7 @@ class ApplicationContainer extends React.Component {
 						break;
 
 					case false:
-						newEstimatedSegmentSize = estimatedSegmentSize * (multiplier * previousGarments.length);;
+						newEstimatedSegmentSize = prevState.estimatedSegmentSize * (multiplier * previousGarments.length);;
 						break;
 				}
 				// newEstimatedSegmentSize = estimatedSegmentSize * (multiplier * previousGarments.length);
@@ -426,6 +426,9 @@ class ApplicationContainer extends React.Component {
 				}
 			}
 
+			if (newEstimatedSegmentSize > 100) {
+				newEstimatedSegmentSize = 100;
+			}
 
 			this.setState({
 				estimatedSegmentSize: newEstimatedSegmentSize,
