@@ -342,20 +342,12 @@ class ApplicationContainer extends React.Component {
 						calculate = 100 * .02;
 				}
 
-				if (calculate > 100) {
-					calculate = 100;
-				}
-
-				if (calculate < 0) {
-					calculate = 0;
-				}
-
 				this.setState({
 					estimatedSegmentSize: calculate,
 				});
 			} else {
 
-				//gendergarments cause a prob? im burnt i dont know tho
+
 				if (selectedGender) {
 					//if product conditions is greater than 1, calculate total from previous state
 					let gender = selectedGender.value;
@@ -379,14 +371,6 @@ class ApplicationContainer extends React.Component {
 							break;
 						case 'Aliens' :
 							calculate = oldEstimatedSegmentSize * .465;
-					}
-
-					if (calculate > 100) {
-						calculate = 100;
-					}
-
-					if (calculate < 0) {
-						calculate = 0;
 					}
 
 					this.setState({
@@ -415,14 +399,6 @@ class ApplicationContainer extends React.Component {
 				case false:
 					newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
 					break;
-			}
-
-			if (calculate > 100) {
-				calculate = 100;
-			}
-
-			if (calculate < 0) {
-				calculate = 0;
 			}
 
 			this.setState({
@@ -467,7 +443,7 @@ class ApplicationContainer extends React.Component {
 
 			this.setState({
 				estimatedSegmentSize: calculate,
-			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize));
+			});
 		}
 
 		if (timeModifier != prevState.timeModifier) {
@@ -506,7 +482,7 @@ class ApplicationContainer extends React.Component {
 
 			this.setState({
 				estimatedSegmentSize: calculate,
-			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize));
+			});
 		}
 
 		if (selectedDate != prevState.selectedDate) {
@@ -547,7 +523,7 @@ class ApplicationContainer extends React.Component {
 
 			this.setState({
 				estimatedSegmentSize: calculate,
-			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize));
+			});
 		}
 
 		//<--------Technology------->
@@ -593,7 +569,7 @@ class ApplicationContainer extends React.Component {
 
 			this.setState({
 				estimatedSegmentSize: calculate,
-			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize))
+			})
 		}
 
 		if (selectedOperatingSystem != prevState.selectedOperatingSystem) {
@@ -638,7 +614,7 @@ class ApplicationContainer extends React.Component {
 
 			this.setState({
 				estimatedSegmentSize: calculate,
-			}, () => console.log(calculate, coefficient, oldEstimatedSegmentSize))
+			})
 		}
 
 		//<--------for new conditions------->
@@ -726,7 +702,6 @@ class ApplicationContainer extends React.Component {
 
 		//if garments are selected
 		if (selectedGarments) {
-			console.log(selectedGarments, value)
 			//if user is removing clothing, remove it from 'selectedGarments' array
 			if (selectedGarments.length >= value.length) {
 
@@ -742,7 +717,6 @@ class ApplicationContainer extends React.Component {
 			}
 
 			//if user is adding clothing, add it to the 'selectedGarments' array
-			console.log(selectedGarments, value)
 			if (selectedGarments.length <= value.length) {
 				this.setState(prevState => ({
 					selectedGarments: [...prevState.selectedGarments, incomingEntry]
@@ -773,6 +747,20 @@ class ApplicationContainer extends React.Component {
 			selectedGarments: [],
 		}))
 	};
+
+	deleteCurrentProduction = () => {
+
+		// selectedGender: null,
+		// 	selectedAssociation: null,
+		// 	selectedGarments: [],
+
+		this.setState({
+			selectedGender: null,
+			selectedAssociation: null,
+			selectedGarments: [],
+		})
+
+	}
 
 	deleteProductCondition = (event, data) => {
 		const { conditionHistory } = this.state;
@@ -978,7 +966,7 @@ class ApplicationContainer extends React.Component {
 													<Grid.Column style={{padding: '1%', width: '15%',}} width={3}>
 														<Dropdown
 															className={'dropdown'}
-															placeholder={ selectedAssociationHistory.value }
+															placeholder={ selectedAssociationHistory.value ? selectedAssociationHistory.value : 'Interested In' }
 															fluid
 															selection
 															disabled={ true }
@@ -1053,7 +1041,7 @@ class ApplicationContainer extends React.Component {
 											/>
 										</Grid.Column>
 
-										<Grid.Column style={{padding: '1%', width: '65%', textAlign:'left'}} width={3}>
+										<Grid.Column style={{padding: '1%', width: '55%', textAlign:'left'}} width={3}>
 											<Dropdown
 												id={'asdf-2'}
 												placeholder={'Select Item'}
@@ -1069,6 +1057,16 @@ class ApplicationContainer extends React.Component {
 												})) }
 												value={ selectedGarments }
 											/>
+										</Grid.Column>
+										<Grid.Column align={'center'} style={{padding: '1%', width: '10%'}} width={3}>
+											<Button
+												align={'center'}
+												onClick={ this.deleteProductCondition }
+												floated={'right'} size={'tiny'}
+												style={{fontFamily: 'IBM Plex Sans', border: '1.5px solid lightGrey', backgroundColor: 'white', color: 'lightGrey', fontSize: '12px', width: '100%'}}
+											>
+												<Icon name={'trash'}></Icon>
+											</Button>
 										</Grid.Column>
 									</Grid.Row>
 
