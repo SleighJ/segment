@@ -315,13 +315,12 @@ class ApplicationContainer extends React.Component {
 
 		//if selectedGender has changed, reset the gendersGarments and estimated segment size
 		if (selectedGender != prevState.selectedGender && !prevState.selectedGender) {
-
 			let calculate;
 			let coefficient = 0;
 			let genderCopy;
 			const conditions = conditionHistory.length;
 			const previousConditions = prevState.conditionHistory.length;
-			const estimatedSegmentSize = conditions == 0 ? 100 : conditions < previousConditions ? prevState.estimatedSegmentSize : null;
+			const estimatedSegmentSize = conditions > 0 ? prevState.estimatedSegmentSize : 100;
 
 			if (conditions < previousConditions) {
 				coefficient = 1;
@@ -336,16 +335,16 @@ class ApplicationContainer extends React.Component {
 						calculate = estimatedSegmentSize * (.75 + coefficient);
 						break;
 					case 'Men':
-						calculate = estimatedSegmentSize * (.285 + coefficient);
+						calculate = estimatedSegmentSize * (.65 + coefficient);
 						break;
 					case 'Women':
-						calculate = estimatedSegmentSize * (.465 + coefficient);
+						calculate = estimatedSegmentSize * (.85 + coefficient);
 						break;
 					case 'Boys' :
-						calculate = estimatedSegmentSize * (.095 + coefficient);
+						calculate = estimatedSegmentSize * (.4 + coefficient);
 						break;
 					case 'Girls' :
-						calculate = estimatedSegmentSize * (.155 + coefficient);
+						calculate = estimatedSegmentSize * (.6 + coefficient);
 						break;
 					case 'Aliens' :
 						calculate = estimatedSegmentSize * (.02 + coefficient);
@@ -356,41 +355,13 @@ class ApplicationContainer extends React.Component {
 			});
 		}
 
-		if (selectedGarments != prevState.selectedGarments) {
-
-
-			// let calculate;
-			// let coefficient = 0;
-			// let addingGarments;
-			// let newEstimatedSegmentSize;
-			//
-			// if (selectedGarments.length > prevState.selectedGarments.length) {
-			// 	addingGarments = true;
-			// } else {
-			// 	addingGarments = false;
-			// }
-			//
-			// switch (addingGarments) {
-			// 	case true:
-			// 		newEstimatedSegmentSize = estimatedSegmentSize * .9;
-			// 		break;
-			//
-			// 	case false:
-			// 		newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
-			// 		break;
-			// }
-			//
-			// this.setState({
-			// 	estimatedSegmentSize: newEstimatedSegmentSize,
-			// });
+		if (selectedGarments != prevState.selectedGarments && selectedGarments) {
 
 			let calculate;
 			let coefficient = 0;
 			let addingGarments;
 			let newEstimatedSegmentSize;
 			let multiplier;
-			const conditions = conditionHistory.length;
-			const previousConditions = prevState.conditionHistory.length;
 			const estimatedSegmentSize = prevState.estimatedSegmentSize;
 
 			const previousGarments = deletedProductHistory ? deletedProductHistory[0].renderGarmentHistory : null;
@@ -413,7 +384,6 @@ class ApplicationContainer extends React.Component {
 						newEstimatedSegmentSize = prevState.estimatedSegmentSize * (multiplier * previousGarments.length);;
 						break;
 				}
-				// newEstimatedSegmentSize = estimatedSegmentSize * (multiplier * previousGarments.length);
 			} else {
 				switch (addingGarments) {
 					case true:
