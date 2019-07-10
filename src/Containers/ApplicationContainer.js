@@ -268,6 +268,7 @@ class ApplicationContainer extends React.Component {
 			selectedAssociation: null,
 			selectedGarments: [],
 			conditionHistory: [],
+			deletedProductHistory: null,
 
 			openCalendar: false,
 			startDate: new Date(),
@@ -286,7 +287,7 @@ class ApplicationContainer extends React.Component {
 	}
 
 	componentDidUpdate = (prevProps, prevState) => {
-		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectedOperatingSystem,  } = this.state;
+		const { selectedGender, selectedAssociation, selectedGarments, estimatedSegmentSize, conditionHistory, selectedDevice, productInteraction, timeModifier, selectedDate, selectedOperatingSystem, deletedProductHistory} = this.state;
 
 		//conditional rendering & functionality for additional product conditions
 		if (conditionHistory.length != prevState.conditionHistory.length) {
@@ -320,7 +321,7 @@ class ApplicationContainer extends React.Component {
 			let genderCopy;
 			const conditions = conditionHistory.length;
 			const previousConditions = prevState.conditionHistory.length;
-			const estimatedSegmentSize = conditions == 0 ? 100 : conditions < previousConditions ? conditionHistory.estimatedSegmentSize : null;
+			const estimatedSegmentSize = conditions == 0 ? 100 : conditions < previousConditions ? prevState.estimatedSegmentSize : null;
 
 			if (conditions < previousConditions) {
 				coefficient = 1;
@@ -356,42 +357,75 @@ class ApplicationContainer extends React.Component {
 		}
 
 		if (selectedGarments != prevState.selectedGarments) {
+
+
 			// let calculate;
 			// let coefficient = 0;
-			// let genderCopy;
-			// const conditions = conditionHistory.length;
-			// const previousConditions = prevState.conditionHistory.length;
-			// const estimatedSegmentSize = conditions.length == 0 ? 100 : prevState.estimatedSegmentSize;
+			// let addingGarments;
+			// let newEstimatedSegmentSize;
 			//
-			// if (conditions < previousConditions) {
-			// 	coefficient = 1;
-			// 	genderCopy = prevState.selectedGender.value;
+			// if (selectedGarments.length > prevState.selectedGarments.length) {
+			// 	addingGarments = true;
 			// } else {
-			// 	genderCopy = selectedGender.value;
+			// 	addingGarments = false;
 			// }
-
-
+			//
+			// switch (addingGarments) {
+			// 	case true:
+			// 		newEstimatedSegmentSize = estimatedSegmentSize * .9;
+			// 		break;
+			//
+			// 	case false:
+			// 		newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+			// 		break;
+			// }
+			//
+			// this.setState({
+			// 	estimatedSegmentSize: newEstimatedSegmentSize,
+			// });
 
 			let calculate;
 			let coefficient = 0;
 			let addingGarments;
 			let newEstimatedSegmentSize;
+			let multiplier;
+			const conditions = conditionHistory.length;
+			const previousConditions = prevState.conditionHistory.length;
+			const estimatedSegmentSize = prevState.estimatedSegmentSize;
+
+			const previousGarments = deletedProductHistory ? deletedProductHistory[0].renderGarmentHistory : null;
 
 			if (selectedGarments.length > prevState.selectedGarments.length) {
 				addingGarments = true;
+				multiplier = .9
 			} else {
 				addingGarments = false;
+				multiplier = 1.1;
 			}
 
-			switch (addingGarments) {
-				case true:
-					newEstimatedSegmentSize = estimatedSegmentSize * .9;
-					break;
+			if (previousGarments) {
+				switch (addingGarments) {
+					case true:
+						newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+						break;
 
-				case false:
-					newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
-					break;
+					case false:
+						newEstimatedSegmentSize = estimatedSegmentSize * (multiplier * previousGarments.length);;
+						break;
+				}
+				// newEstimatedSegmentSize = estimatedSegmentSize * (multiplier * previousGarments.length);
+			} else {
+				switch (addingGarments) {
+					case true:
+						newEstimatedSegmentSize = estimatedSegmentSize * .9;
+						break;
+
+					case false:
+						newEstimatedSegmentSize = estimatedSegmentSize * 1.1;
+						break;
+				}
 			}
+
 
 			this.setState({
 				estimatedSegmentSize: newEstimatedSegmentSize,
@@ -742,7 +776,6 @@ class ApplicationContainer extends React.Component {
 	};
 
 	deleteCurrentProduction = () => {
-
 		this.setState({
 			selectedGender: null,
 			selectedAssociation: null,
@@ -755,15 +788,19 @@ class ApplicationContainer extends React.Component {
 		const { conditionHistory } = this.state;
 		const { id } = data;
 
-		const previousSegmentSize = conditionHistory[0].estimatedSegmentSize;
+		let previousSegmentSize = conditionHistory[0].estimatedSegmentSize;
 		const conditionHistoryCopy = [...conditionHistory];
 		conditionHistoryCopy.splice(id, 1);
 
-		console.log(conditionHistory)
+
+		if (!previousSegmentSize) {
+			previousSegmentSize = 100;
+		}
 
 		this.setState(prevState => ({
 			conditionHistory: conditionHistoryCopy,
 			estimatedSegmentSize: previousSegmentSize,
+			deletedProductHistory: [...conditionHistory],
 		}))
 	};
 
